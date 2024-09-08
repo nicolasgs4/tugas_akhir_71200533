@@ -2,9 +2,10 @@ import './../App.css';
 
 import { useEffect, useRef, useState } from 'react';
 import ChartCard from '../components/ChartCard';
+import ProgressChartCard from '../components/ProgressChartCard';
 
 export function Dashboard() {
-    const [dashboardData, setDashboardData] = useState(null);
+    const [valueData, setValueData] = useState(null);
     const [loading, setLoading] = useState(true);
     const totalQuestionnaire = useRef(0);
     const totalRespondent = useRef(0);
@@ -19,7 +20,7 @@ export function Dashboard() {
             });
             const res = await response.json();
             if (res) {
-                setDashboardData(res);
+                setValueData(res);
             } else {
                 throw new Error(res.message);
             }
@@ -35,27 +36,28 @@ export function Dashboard() {
     }, []);
 
     useEffect(() => {
-        if (dashboardData) {
-            totalQuestionnaire.current = Object.keys(dashboardData).length;
+        if (valueData) {
+            totalQuestionnaire.current = Object.keys(valueData).length;
             let count = 0;
-            Object.values(dashboardData).forEach((element) => {
+            Object.values(valueData).forEach((element) => {
                 count += element.value_count;
             });
             totalRespondent.current = count;
         }
-    }, [dashboardData]);
+    }, [valueData]);
 
     if (loading) {
         return <div>Loading...</div>;
     }
 
-    if (!dashboardData) {
+    if (!valueData) {
         return <div>No data available</div>;
     }
 
     return (
         <div className='flex p-4 gap-4'>
-            <ChartCard dashboardData={dashboardData}/>
+            {/* <ChartCard valueData={valueData}/> */}
+            <ProgressChartCard/>
             <div className="w-[200px] h-[164px] px-5 pt-2.5 pb-5 bg-neutral-50 rounded-[15px] border border-neutral-500 flex-col justify-start items-center gap-10 inline-flex">
                 <div className="self-stretch h-[52px] flex-col justify-start items-center gap-5 flex">
                     <div className="w-[184px] h-[50px] text-center text-neutral-900 text-[26px] font-normal font-['Roboto'] leading-none">Total <br /> Kuesioner</div>

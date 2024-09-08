@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import Select from 'react-select'
 import randomColor from 'randomcolor';
 
-const ChartCard = ({dashboardData}) => {
+const ChartCard = ({valueData}) => {
     const [form, setForm] = useState({form_id: null, value_id: null, question_type: null})
     const [data, setData] = useState();
     const chartRef = useRef();
@@ -30,8 +30,9 @@ const ChartCard = ({dashboardData}) => {
     ]
     
     const handleGetFormValue = async () => {
+        console.log(form.value_id)
         try {
-            const response = await fetch("/value/" + form.form_id + "?value=" + form.value_id, {
+            const response = await fetch("/value/" + form.form_id + "?index=" + form.value_id, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -39,7 +40,6 @@ const ChartCard = ({dashboardData}) => {
             });
             const res = await response.json();
             if (res) {
-                console.log(res)
                 if (res.length <= 0) return;
                 if (data) chartRef.current.reset();
                 const randomizedColor = [];
@@ -68,8 +68,7 @@ const ChartCard = ({dashboardData}) => {
     const hasRendered = useRef(false);
 
     useEffect(() => {
-        console.log(dashboardData)
-        titleOptions.current = Object.entries(dashboardData).map(([key, value]) => ({
+        titleOptions.current = Object.entries(valueData).map(([key, value]) => ({
             value: key,
             label: value.form_title
         }));
@@ -97,7 +96,7 @@ const ChartCard = ({dashboardData}) => {
                     options={titleOptions.current}
                     onChange={e => {
                         setForm(prev => ({ ...prev, form_id: e.value, value_id: null }));
-                        questionOptions.current = Object.entries(dashboardData[e.value].question_type)
+                        questionOptions.current = Object.entries(valueData[e.value].question_type)
                             .filter(([key, value]) => value !== "text")
                             .map(([key, value]) => ({
                                 value: key,
@@ -108,7 +107,7 @@ const ChartCard = ({dashboardData}) => {
             </div>
             <div className='w-full'>
                 <Select ref={questionSelect} options={questionOptions.current}  onChange={e => {
-                    setForm(prev => ({ ...prev, value_id: e.value, question_type: dashboardData[form.form_id].question_type[e.value] }));
+                    setForm(prev => ({ ...prev, value_id: e.value, question_type: valueData[form.form_id].question_type[e.value] }));
                 }} />
             </div>
             <div className='w-[300px] h-[300px] flex'>

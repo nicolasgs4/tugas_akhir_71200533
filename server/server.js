@@ -87,7 +87,7 @@ app.get('/dashboard', (req, res) => {
       return;
     } 
     else {
-      connection.query('SELECT f.form_id, f.form_title, f.form_question, COUNT(v.form_sid) AS value_count FROM form f LEFT JOIN `value` v ON f.form_sid = v.form_sid GROUP BY f.form_sid, f.form_title; ', (err, results) => {
+      connection.query('SELECT f.form_id, f.form_title, f.form_question, COUNT(v.form_sid) AS value_count FROM form f LEFT JOIN `value` v ON f.form_sid = v.form_sid GROUP BY f.form_sid, f.form_title', (err, results) => {
         if (err) {
           console.error('Error executing SQL query:', err);
           res.status(500).json({ error: 'Internal Server Error' });
@@ -95,31 +95,61 @@ app.get('/dashboard', (req, res) => {
           return;
         } 
         if (results.length > 0) {
-            const newResults = {};
-            results.forEach(element => {
-              const questionTypes = {};
-              if (element.form_question) {
-                JSON.parse(element.form_question).forEach((question, index) => {
-                  if (
-                    question.type === "scale" ||
-                    question.type === "toggle" ||
-                    question.type === "multi"
-                  ) {
-                    questionTypes[index] = question.type;
-                  }
-                  if (question.type === "text"){
-                    questionTypes[index] = question.type;
-                  }
-                });
-              }
-              
-              newResults[element.form_id] = {
-                form_title: element.form_title,
-                question_type: questionTypes,
-                value_count: element.value_count
-              };
-            });
+          const newResults = {};
+          results.forEach(element => {
+            const questionTypes = {};
+            if (element.form_question) {
+              JSON.parse(element.form_question).forEach((question, index) => {
+                questionTypes[index] = question.id;
+              });
+            }
+            
+            newResults[element.form_id] = {
+              form_title: element.form_title,
+              question_type: questionTypes,
+              value_count: element.value_count
+            };
+          });          
           res.json(newResults);
+          connection.release();
+        }
+      })
+    }
+  })
+})
+
+app.get('/progress', (req, res) => {
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error('Error executing SQL query:', err);
+      res.status(500).json({ error: 'Internal Server Error' });
+      connection.release();
+      return;
+    }
+    else {
+      connection.query(
+        `SELECT 
+          p.publish_end, 
+          p.min_respondent, 
+          f.form_title, 
+          COUNT(v.value_sid) AS value_count
+        FROM publish p
+        LEFT JOIN form f ON p.form_sid = f.form_sid
+        LEFT JOIN \`value\` v ON p.form_sid = v.form_sid
+          AND v.value_timestamp BETWEEN p.publish_start AND p.publish_end
+        WHERE NOW() BETWEEN p.publish_start AND p.publish_end
+          AND p.min_respondent IS NOT NULL
+          AND p.min_respondent > 0
+        GROUP BY p.publish_end, p.min_respondent, f.form_title;`, 
+        (err, results) => {
+        if (err) {
+          console.error('Error executing SQL query:', err);
+          res.status(500).json({ error: 'Internal Server Error' });
+          connection.release();
+          return;
+        }
+        if (results.length > 0) {
+          res.json(results);
           connection.release();
         }
       })
@@ -250,22 +280,20 @@ app.get("/value/:id", (req, res) => {
           return;
         }
         const resultArray = [];
-        console.log()
         results.forEach(element => {
-
-          resultArray.push(JSON.parse(element.value_data)[0])
+          resultArray.push(JSON.parse(element.value_data)[req.query.index])
         })
+        console.log(resultArray)
         if (resultArray.length > 0 ) {
           const newResults = {}
           resultArray.map((element, index) => {
-            if (
-              element.type === "scale" ||
-              element.type === "multi" ||
-              element.type === "rating" ||
-              element.type === "toggle"
-            ) {
-              if (element.value.length > 1) {
+            if (req.query.type === "text") {
+              newResults[index] = element.value;
+            } 
+            else {
+              if (element.value.length > 0) {
                 element.value.forEach(valueElement => {
+                  console.log(valueElement)
                   if (newResults[valueElement]) {
                     newResults[valueElement] += 1;
                   }
@@ -275,12 +303,7 @@ app.get("/value/:id", (req, res) => {
                 })
               }
             }
-            if (req.query.type === "text") {
-              newResults[index] = element.value;
-            }
           });
-
-          console.log(newResults)
           res.json(newResults);
           connection.release();
         } 

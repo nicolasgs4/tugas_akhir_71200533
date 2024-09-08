@@ -13,8 +13,9 @@ export function FormAnalysis() {
     const [formDetail, setFormDetail] = useState([]);
     const [formValueData, setFormValueData] = useState([]);
 
+    const [publishValues, setPublishValues] = useState();
     const [publishOptions, setPublishOptions] = useState([]);
-    const [publishValue, setPublishValue] = useState({0 : 0, 1 : 0 });
+    const [publishIndex, setPublishIndex] = useState({0 : 0, 1 : 0 });
 
     const hasRendered = useRef(false);
 
@@ -32,7 +33,7 @@ export function FormAnalysis() {
             });
             const res = await response.json();
             if (res) {
-                console.log(res)
+                setPublishValues(res)
                 const options = [];
                 for (let i = 0; i < res.length; i++) {
                     options.push({ value: res[i].publish_start, label: formatDateToIso(res[i].publish_start) } )
@@ -79,37 +80,19 @@ export function FormAnalysis() {
         }
     };
 
-    const handleGetValue = async () => {
-        try {
-            const response = await fetch("/value/" + id + "?publish_start=" + "2024-08-22T05:06:05.000Z" + "&publish_end=" + "2024-08-28T16:26:40.000Z"
-                , {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                }
-            });
-            const res = await response.json();
-            if (res) {
-                console.log(res)
-                return;
-            }
-            throw new Error(res.message);
-        } catch (err) {
-            console.error(err);
-        }
-    };
-
     useEffect(() => {
         if (!hasRendered.current) { hasRendered.current = true; return; }
         handleGetForm();
         handleGetPublish();
-        handleGetValue();
-        console.log("bruh")
     }, [])
 
     useEffect(() => {
         console.log(formValueData)
     }, [formValueData])
+
+    useEffect(() => {
+        console.log(formValueData)
+    }, [publishIndex])
 
     return (
         <div className='h-auto min-h-screen bg-neutral-50 flex justify-center'>
@@ -135,9 +118,9 @@ export function FormAnalysis() {
                         options={
                             publishOptions
                         }
-                        value={publishOptions[publishValue[0]]}
+                        value={publishOptions[publishIndex[0]]}
                         onChange={e => {
-                            setPublishValue(prev => ({ ...prev, 0: publishOptions.indexOf(e) }))
+                            setPublishIndex(prev => ({ ...prev, 0: publishOptions.indexOf(e) }))
                         }}
                         isSearchable={false}
                         className='w-60 bg-neutral-50 rounded-lg shadow border border-sky-400 justify-stretch items-center'
@@ -145,30 +128,18 @@ export function FormAnalysis() {
                     <Select options={
                         publishOptions
                     }
-                        value={publishOptions[publishValue[1]]}
+                        value={publishOptions[publishIndex[1]]}
                         onChange={e => {
-                            setPublishValue(prev => ({ ...prev, 1: publishOptions.indexOf(e) }))
+                            setPublishIndex(prev => ({ ...prev, 1: publishOptions.indexOf(e) }))
                         }}
                         isSearchable={false}
                         className='w-60 bg-neutral-50 rounded-lg shadow border border-sky-400 justify-stretch items-center'
                     />
-                    <div
-                        id={'title'}
-                        className='w-full pl-5 pr-3 py-3 bg-neutral-50 rounded-xl border border-sky-400 flex-col justify-start items-start gap-5 inline-flex relative cursor cursor-pointer select-none'>
-                        <label className='h-fit w-full flex text-black text-2xl font-normal relative flex-wrap'>
-                            <ResizableTextArea type='text' className='w-3/4 bg-neutral-50 pt-4 px-2 flex-wrap overflow-auto'
-                                value={formDetail.formTitle}
-                                resize='vertical'
-                                disabled={true}
-                            />
-                            <ResizableTextArea type='text' className='w-3/4 bg-neutral-50 pt-4 px-2 flex-wrap overflow-auto'
-                                value={formDetail.formDescription}
-                                resize='vertical'
-                                disabled={true}
-                            />
-                        </label>
-                    </div>
-                    <ValueContent id={id} formDetail={formDetail} formValueData={formValueData} />
+                    {
+                        publishValues !== null  ?
+                            <ValueContent id={id} formValueData={formValueData}/>
+                        : null
+                    }
                 </div>
             </div>
         </div>

@@ -2,15 +2,16 @@ import './../App.css';
 import { getQuestionTypeValue } from '../data/QuestionData';
 import { useEffect, useRef, useState } from 'react';
 import ResizableTextArea from './ResizableTextArea';
-import { ArcElement, Chart, Tooltip } from 'chart.js';
 import randomColor from 'randomcolor';
-import { getElementAtEvent, Pie } from 'react-chartjs-2';
+import { ArcElement, BarElement, CategoryScale, Chart, Filler, LinearScale, LineElement, PointElement, TimeScale, Title, Tooltip } from 'chart.js';
+import { Bar, getElementAtEvent, Pie } from 'react-chartjs-2';
 
 
-export default function ValueContainer({id, index, question }) {
+export default function ValueContainer({id, index, question}) {
     const activeIndex = getQuestionTypeValue(question.type);
-    const [data, setData] = useState();
+    const [valueData, setValueData] = useState(null);
     const chartRef = useRef();
+
     const defaultbackgroundColor = [
         '#FF4853',
         '#3BC0ED',
@@ -30,7 +31,9 @@ export default function ValueContainer({id, index, question }) {
 
     const handleGetFormValue = async () => {
         try {
-            const response = await fetch("/value/" + id + "?value=" + index + "&type=" + question.type, {
+            const response = await fetch("/value/" + id + "?index=" + index 
+                // + "?publish_start=" + "2024-08-22T05:06:05.000Z" + "&publish_end=" + "2024-08-28T16:26:40.000Z"
+                , {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -39,14 +42,14 @@ export default function ValueContainer({id, index, question }) {
             const res = await response.json();
             if (res) {
                 if (activeIndex === 0) return;
-                if (activeIndex === 1) setData(Object.values(res))
+                if (activeIndex === 1) setValueData(Object.values(res))
                 else {
-                    if (data) chartRef.current.reset();
+                    if (valueData) chartRef.current.reset();
                     const randomizedColor = [];
                     for (let i = 0; i < Object.keys(res).length; i++) {
                         randomizedColor.push(randomColor());
                     }
-                    setData({
+                    setValueData({
                         labels: Object.keys(res),
                         datasets: [
                             {
@@ -57,7 +60,7 @@ export default function ValueContainer({id, index, question }) {
                             }
                         ]
                     })
-                }             
+                }
                 return;
             }
             throw new Error(res.message);
@@ -69,15 +72,17 @@ export default function ValueContainer({id, index, question }) {
     useEffect(() => {
         if (!hasRendered.current) { hasRendered.current = true; return; }
         handleGetFormValue();
+        console.log(id)
+        console.log(index)
+        console.log(question)
     }, [])
 
     useEffect(() => {
         if (!hasRendered.current) { hasRendered.current = true; return; }
-        console.log(data)
-    }, [data])
+        console.log(valueData)
+    }, [valueData])
 
-    Chart.register(ArcElement, Tooltip)
-
+    Chart.register(ArcElement, BarElement, Tooltip, CategoryScale, LinearScale, Title, PointElement, LineElement, TimeScale, Filler);
 
     return (
         <div className='w-full '>
@@ -91,34 +96,19 @@ export default function ValueContainer({id, index, question }) {
                             <a className='mt-4'>{index + 1 + '. '}</a>
                     }
                     <ResizableTextArea disabled={true} type='text' className='w-3/4 bg-neutral-50 pt-4 px-2 flex-wrap overflow-auto' value={question.name} resize='vertical' />
-                </label>          
-                {
-                    activeIndex === 1 &&
-                    <div className='w-full h-auto'>
-                        {
-                            data != null && data.map((element, index) => {
-                                return (
-                                    <ResizableTextArea
-                                        key={"answer" + index}
-                                        className='w-full bg-neutral-50 rounded-xl border border-black overflow-auto p-4 text-2xl flex-wrap '
-                                        value={element}
-                                        resize={"vertical"}
-                                        disabled={true}
-                                    />
-                                )
-                            })
-                        }
-                    </div>
+                </label>
+                <div className='w-[600px] h-[300px] flex'>
+                    {
+                        valueData != null
+                            ? <Pie ref={chartRef} data={valueData} onClick={e => { console.log(getElementAtEvent(chartRef.current, e)) }} />
+                            : null
                     }
-                {
-                    activeIndex === 2 || activeIndex === 3 || activeIndex === 4 || activeIndex === 5 &&
-                    <div className='w-full h-fit'>
-                        {
-                            data != null && 
-                            <Pie ref={chartRef} data={data} onClick={e => { console.log(getElementAtEvent(chartRef.current, e)) }} />
-                        }
-                    </div>
-                }
+                    {
+                        valueData != null
+                            ? <Bar ref={chartRef} data={valueData} onClick={e => { console.log(getElementAtEvent(chartRef.current, e)) }} />
+                            : null
+                    }
+                </div>
             </div>
         </div>
     )
