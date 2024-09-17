@@ -103,7 +103,6 @@ app.get('/dashboard', (req, res) => {
                 questionTypes[index] = question.id;
               });
             }
-            
             newResults[element.form_id] = {
               form_title: element.form_title,
               question_type: questionTypes,
@@ -149,10 +148,68 @@ app.get('/progress', (req, res) => {
           return;
         }
         if (results.length > 0) {
+          console.log(results)
           res.json(results);
           connection.release();
         }
       })
+    }
+  })
+})
+
+app.get('/trend', (req, res) => {
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error('Error executing SQL query:', err);
+      res.status(500).json({ error: 'Internal Server Error' });
+      connection.release();
+      return;
+    }
+    else {
+      connection.query(
+        `WITH RECURSIVE months AS (
+            SELECT
+                MIN(DATE_FORMAT(value_timestamp, '%Y-%m-01')) AS month_start
+            FROM \`value\`
+            
+            UNION ALL
+            
+            SELECT 
+                DATE_ADD(month_start, INTERVAL 1 MONTH)
+            FROM months
+            WHERE month_start < (SELECT MAX(DATE_FORMAT(value_timestamp, '%Y-%m-01')) FROM \`value\`)
+        )
+        SELECT
+            IFNULL(COUNT(v.value_sid), 0) AS count,
+            IFNULL(FLOOR(COUNT(v.value_sid) / NULLIF(COUNT(DISTINCT v.form_sid), 0)), 0) AS average,
+            DATE_FORMAT(m.month_start, '%M %Y') AS month
+        FROM months m
+        LEFT JOIN \`value\` v
+            ON DATE_FORMAT(v.value_timestamp, '%Y-%m') = DATE_FORMAT(m.month_start, '%Y-%m')
+        GROUP BY m.month_start
+        ORDER BY m.month_start;`,
+        (err, results) => {
+          if (err) {
+            console.error('Error executing SQL query:', err);
+            res.status(500).json({ error: 'Internal Server Error' });
+            connection.release();
+            return;
+          }
+          if (results.length > 0) {
+            const trendValue = {
+              count: [],
+              average: [],
+              month: []
+            }
+            results.forEach(element => {
+              trendValue.count.push(element.count);
+              trendValue.average.push(element.average);
+              trendValue.month.push(element.month);
+            })
+            res.json(trendValue);
+            connection.release();
+          }
+        })
     }
   })
 })

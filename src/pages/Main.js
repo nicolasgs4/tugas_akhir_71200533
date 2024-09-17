@@ -60,16 +60,19 @@ export function Main({content}) {
         <div className='flex'>
             <Sidebar content={content}/>
 
-            <div className='flex flex-col w-full'>
+            <div className='w-full'>
                 {
                     userData ?
-                    <Headbar
-                        email={userData.email} username={userData.username}
-                    /> 
+                    <div className='h-[12%]'>
+                        <Headbar
+                            email={userData.email} username={userData.username}
+                        /> 
+                    </div>
                     : null
                 }
-                
-                {contentLoader()}
+                <div className='h-[88%]'>
+                    {contentLoader()}
+                </div>
             </div>
 
         </div>

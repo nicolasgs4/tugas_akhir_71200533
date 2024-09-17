@@ -5,7 +5,7 @@ const Sidebar = ({content}) => {
     const navigate = useNavigate();
 
     return (
-        <div className="w-1/4 h-screen pt-[60px] pb-5 bg-neutral-50 border border-blue-400 justify-start items-start gap-2.5 inline-flex">
+        <div className="w-1/4 h-screen pt-[60px] pb-5 bg-neutral-50 border border-blue-400 justify-start items-start gap-2.5 flex min-w-max">
             <div className="w-[312px] h-full flex-col justify-start items-center gap-2.5 inline-flex">
                 <img className="w-[79px] h-[50px]" src="/images/fti.png" />
                 <div className="w-[250px] h-20 justify-start items-end gap-3.5 inline-flex">

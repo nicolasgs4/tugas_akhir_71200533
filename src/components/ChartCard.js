@@ -4,6 +4,7 @@ import { getElementAtEvent, Pie } from 'react-chartjs-2';
 import { useEffect, useRef, useState } from 'react';
 import Select from 'react-select'
 import randomColor from 'randomcolor';
+import { ChromePicker } from 'react-color';
 
 const ChartCard = ({valueData}) => {
     const [form, setForm] = useState({form_id: null, value_id: null, question_type: null})
@@ -29,6 +30,32 @@ const ChartCard = ({valueData}) => {
         '#FEC60C'
     ]
     
+    const [displayColorPicker, setDisplayColorPicker] = useState(false)
+    
+    const handleClick = () => {
+        setDisplayColorPicker(!displayColorPicker);
+    };
+
+    const handleClose = () => {
+        setDisplayColorPicker(false);
+    };
+
+    const handleChangeComplete = (color, event) => {
+        console.log(color)
+    };
+
+    const popover = {
+        position: 'absolute',
+        zIndex: '2',
+    }
+    const cover = {
+        position: 'fixed',
+        top: '0px',
+        right: '0px',
+        bottom: '0px',
+        left: '0px',
+    }
+
     const handleGetFormValue = async () => {
         console.log(form.value_id)
         try {
@@ -87,7 +114,7 @@ const ChartCard = ({valueData}) => {
     Chart.register(ArcElement, Tooltip);
 
     return (
-        <div className="w-full p-2.5 bg-neutral-50 rounded-[15px] border border-neutral-500 flex-col  items-center gap-2.5 inline-flex relative">
+        <div className="h-full p-2.5 bg-neutral-50 rounded-[15px] border border-neutral-500 flex-col items-center gap-2.5 flex">
             <div className="flex-col justify-start items-start gap-2 flex">
                 <div className="text-center text-zinc-900 text-base font-normal font-['Inter'] leading-normal">Custom Chart</div>
             </div>
@@ -110,16 +137,25 @@ const ChartCard = ({valueData}) => {
                     setForm(prev => ({ ...prev, value_id: e.value, question_type: valueData[form.form_id].question_type[e.value] }));
                 }} />
             </div>
-            <div className='w-[300px] h-[300px] flex'>
+            <div className='w-[250px] flex'>
                 {
                     data != null 
-                    ? <Pie ref={chartRef} data={data} onClick={e => { console.log(getElementAtEvent(chartRef.current, e))}}/>
+                        ? <Pie ref={chartRef} data={data} onClick={e => {
+                            console.log(getElementAtEvent(chartRef.current, e))}}/>
                     : null
                 }
             </div>
-            <div className="w-[111px] p-2.5 absolute right-0 top-0 bg-white rounded-[15px] shadow flex-col gap-2 flex">
+            <div className="w-[111px] p-2.5 bg-white rounded-[15px] shadow flex-col gap-2 flex">
                 <div className="w-[91px] px-2.5 bg-white rounded-[15px] border border-neutral-500 justify-start items-start a gap-2 inline-flex">
                     <div className="text-neutral-900 text-base font-normal font-['Inter'] leading-normal">Edit</div>
+                    <div>x
+                        <button onClick={handleClick}>Pick Color</button>
+                        {displayColorPicker ? 
+                            <div style={popover}>
+                            <div style={cover} onClick={handleClose} />
+                            <ChromePicker color={'#FF4853'} disableAlpha={true} onChangeComplete={handleChangeComplete} />
+                        </div> : null}
+                    </div>                    
                     <div className="w-6 h-6 relative" />
                 </div>
                 {/* {

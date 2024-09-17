@@ -56,6 +56,7 @@ const ProgressChartCard = () => {
                     const minLimit = Math.max(500 - 100, 0);
                     const postLimit = Math.max(100 - 500, 0);
                     const offset = parseInt(Math.max(500 * 0.25 - postLimit, 0));
+                    console.log(res)
 
                     const data = {
                         info: {
@@ -100,6 +101,7 @@ const ProgressChartCard = () => {
                             }
                         ]
                     };
+
                     setProgressBarData(prev => [...prev, data]);
                 });
                 return;
@@ -138,7 +140,7 @@ const ProgressChartCard = () => {
     Chart.register(BarElement, Tooltip, CategoryScale, LinearScale, Title, PointElement, LineElement, TimeScale, Filler);
 
     return (
-        <div className='w-full h-[380px] p-2.5 bg-neutral-50 rounded-[15px] border border-neutral-500 inline-flex flex-col items-center gap-2.5 relative'>
+        <div className='w-full h-full p-2.5 bg-neutral-50 rounded-[15px] border border-neutral-500 inline-flex flex-col items-center gap-2.5 relative'>
             <div>Progres Kuesioner</div>
             <div>{curQuest + " dari " + totQuest + " mencapati target pengisian"}</div>
             <div className='flex flex-col w-full overflow-y-scroll'>

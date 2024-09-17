@@ -9,7 +9,7 @@ const Headbar = ({email, username}) => {
     }
 
     return (
-        <div className="w-full h-[70px] px-10 py-[15px] bg-neutral-50 border border-sky-400 justify-end items-center gap-2.5 inline-flex">
+        <div className="w-full px-10 py-[15px] bg-neutral-50 border border-sky-400 justify-end items-center gap-2.5 inline-flex">
             <div className="text-sky-400 text-2xl font-black font-['Montserrat']">Buat Kuesioner</div>
             <div className="h-14 justify-center items-center gap-3 flex">
                 <img className="w-14 h-14 relative rounded-2xl" src="https://via.placeholder.com/56x56" />
