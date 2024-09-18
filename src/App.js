@@ -1,6 +1,6 @@
 import './App.css';
 
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import { Login } from './pages/Login';
 import { Main } from './pages/Main'
 import { Form } from './pages/Form';
@@ -24,7 +24,7 @@ function App() {
                   <Route path="/form/:id/edit" element={<Form />} />
                   <Route path="/form/:id/view" element={<FormValue />} />
                   <Route path="/form/:id/analysis" element={<FormAnalysis />} />
-                  <Route path="/*" element={<Login />} />
+                  <Route path="/*" element={useNavigate("/login")} />
               </Route>
             </Routes>
           </AuthProvider>
