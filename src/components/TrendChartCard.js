@@ -61,7 +61,7 @@ const TrendChartCard = () => {
     Chart.register(BarElement, Tooltip, CategoryScale, LinearScale, Title, PointElement, LineElement, TimeScale, Filler);
 
     return (
-        <div className='w-full h-full p-2.5 bg-neutral-50 rounded-[15px] border border-neutral-500 flex flex-wrap items-center relative'>
+        <div className='w-full h-full p-2.5 pt-10 pb-5 bg-neutral-50 rounded-[15px] border border-neutral-500 fix relative'>
             <div>Rata-rata Jumlah Responden per Bulan</div>
             {
                 loadTrendFinish && (

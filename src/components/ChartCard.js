@@ -1,10 +1,12 @@
 import { ArcElement, Chart, Tooltip } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import './../App.css';
 import { getElementAtEvent, Pie } from 'react-chartjs-2';
 import { useEffect, useRef, useState } from 'react';
 import Select from 'react-select'
 import randomColor from 'randomcolor';
 import { ChromePicker } from 'react-color';
+import { useCookies } from 'react-cookie';
 
 const ChartCard = ({valueData}) => {
     const [form, setForm] = useState({form_id: null, value_id: null, question_type: null})
@@ -14,6 +16,12 @@ const ChartCard = ({valueData}) => {
     const questionOptions = useRef([]);
 
     const questionSelect = useRef();
+
+    const [colorSelected, setColorSelected] = useState();
+    const elementIndex = useRef();
+    const clickPos = useRef();
+
+    const [cookie, setCookie, removeCookie] = useCookies(['cookies-n-cream']);
 
     const defaultbackgroundColor = [
         '#FF4853',
@@ -32,32 +40,33 @@ const ChartCard = ({valueData}) => {
     
     const [displayColorPicker, setDisplayColorPicker] = useState(false)
     
-    const handleClick = () => {
-        setDisplayColorPicker(!displayColorPicker);
+    const handleClick = (color) => {
+        setDisplayColorPicker(true);
+        setColorSelected(color);
     };
 
     const handleClose = () => {
         setDisplayColorPicker(false);
+        setColorSelected();
     };
 
-    const handleChangeComplete = (color, event) => {
-        console.log(color)
-    };
+    const handleChangeComplete = (color, e) => {
+        setColorSelected(color.hex);
+        const colorSet = data.datasets[0].backgroundColor;
+        colorSet[elementIndex.current] = color.hex
 
-    const popover = {
-        position: 'absolute',
-        zIndex: '2',
-    }
-    const cover = {
-        position: 'fixed',
-        top: '0px',
-        right: '0px',
-        bottom: '0px',
-        left: '0px',
-    }
+        setData((prev) => ({
+            ...prev,
+            datasets: [
+                {
+                    ...prev.datasets[0],
+                    backgroundColor: colorSet,
+                },
+            ],
+        }));
+    };
 
     const handleGetFormValue = async () => {
-        console.log(form.value_id)
         try {
             const response = await fetch("/value/" + form.form_id + "?index=" + form.value_id, {
                 method: "GET",
@@ -73,6 +82,7 @@ const ChartCard = ({valueData}) => {
                 for (let i = 0; i < Object.keys(res).length; i++) {
                     randomizedColor.push(randomColor());
                 }
+                console.log(res)
                 setData({
                     labels: Object.keys(res),
                     datasets: [
@@ -84,6 +94,7 @@ const ChartCard = ({valueData}) => {
                         }
                     ]
                 })
+                // setCookie("cookies-n-cream", JSON.parse(defaultbackgroundColor));
                 return;
             }
             throw new Error(res.message);
@@ -92,6 +103,22 @@ const ChartCard = ({valueData}) => {
         }
     };
     
+    const handleCopyChart = () => {
+        const canvas = chartRef.current.canvas;
+        if (canvas) {
+            canvas.toBlob((blob) => {
+                if (blob) {
+                    const item = new ClipboardItem({ 'image/png': blob });
+                    navigator.clipboard.write([item]).then(() => {
+                        console.log('Canvas copied to clipboard');
+                    }).catch((error) => {
+                        console.error('Error copying to clipboard: ', error);
+                    });
+                }
+            })
+        }
+    }
+
     const hasRendered = useRef(false);
 
     useEffect(() => {
@@ -112,6 +139,10 @@ const ChartCard = ({valueData}) => {
     }, [data])
 
     Chart.register(ArcElement, Tooltip);
+
+    Chart.defaults.set('plugins.datalabels', {
+        color: '#000000'
+    });
 
     return (
         <div className="h-full p-2.5 bg-neutral-50 rounded-[15px] border border-neutral-500 flex-col items-center gap-2.5 flex">
@@ -137,39 +168,39 @@ const ChartCard = ({valueData}) => {
                     setForm(prev => ({ ...prev, value_id: e.value, question_type: valueData[form.form_id].question_type[e.value] }));
                 }} />
             </div>
-            <div className='w-[250px] flex'>
-                {
-                    data != null 
-                        ? <Pie ref={chartRef} data={data} onClick={e => {
-                            console.log(getElementAtEvent(chartRef.current, e))}}/>
-                    : null
+            <div className='w-full flex relative justify-center'>
+                <div className='w-[250px]'>
+                    {
+                        data != null
+                            && <Pie 
+                                ref={chartRef} 
+                                data={data}
+                                plugins={[ChartDataLabels]} 
+                                onClick={e => {
+                                    if (getElementAtEvent(chartRef.current, e).length <= 0) return;
+                                    handleClick(getElementAtEvent(chartRef.current, e)[0].element.options.backgroundColor);
+                                    elementIndex.current = getElementAtEvent(chartRef.current, e)[0].index;
+                                    clickPos.current = { x: e.pageX + 'px', y: e.pageY + 'px' };
+                                }
+                            } />
+                    }
+                </div>
+                {data != null &&
+                    <button className='absolute right-0' onClick={handleCopyChart}>
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#0075b6"><path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z" /></svg>
+                    </button>
                 }
             </div>
-            <div className="w-[111px] p-2.5 bg-white rounded-[15px] shadow flex-col gap-2 flex">
-                <div className="w-[91px] px-2.5 bg-white rounded-[15px] border border-neutral-500 justify-start items-start a gap-2 inline-flex">
-                    <div className="text-neutral-900 text-base font-normal font-['Inter'] leading-normal">Edit</div>
-                    <div>x
-                        <button onClick={handleClick}>Pick Color</button>
-                        {displayColorPicker ? 
-                            <div style={popover}>
-                            <div style={cover} onClick={handleClose} />
-                            <ChromePicker color={'#FF4853'} disableAlpha={true} onChangeComplete={handleChangeComplete} />
-                        </div> : null}
-                    </div>                    
-                    <div className="w-6 h-6 relative" />
-                </div>
-                {/* {
-                    data != null ? (
-                        data.datasets[0].data.map((element, index) => (
-                            <div key={index} className="justify-start items-center gap-[23px] inline-flex relative">
-                                <div className={`w-5 h-5 rounded-[50px]`} style={{backgroundColor: `${data.datasets[0].backgroundColor[index]}`}}/> 
-                                <button onClick={() => { chartRef.current.getDatasetMeta(0).data[index].hidden ? chartRef.current.show(0, index) : chartRef.current.hide(0, index)} }>{data.labels[index]}</button>
-                            </div>
-                        ))
-                    ) : null
-                } */}
-
-            </div>
+            
+            {displayColorPicker &&
+                <div className={`absolute z-[2]`} style={{left: clickPos.current.x, top: clickPos.current.y}}>
+                    <div className='fixed top-0 right-0 left-0 bottom-0' onClick={handleClose} />
+                    <ChromePicker color={colorSelected} disableAlpha={true} onChange={handleChangeComplete}/>
+                </div> 
+            }
+            
+            
+            
         </div>
     )
 }

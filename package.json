@@ -10,6 +10,7 @@
     "autoprefixer": "^10.4.16",
     "babel-plugin-react-css-modules": "^5.2.6",
     "chart.js": "^4.4.3",
+    "chartjs-plugin-datalabels": "^2.2.0",
     "date-fns": "^3.6.0",
     "jsonwebtoken": "^9.0.2",
     "moment": "^2.30.1",

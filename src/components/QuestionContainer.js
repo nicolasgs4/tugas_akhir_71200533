@@ -13,6 +13,24 @@ function QuestionContainer({
 ) {
     const activeIndex = getQuestionTypeValue(question.type);
 
+    const [toggleArr, setToggleArr] = useState(question['answerElement']);
+
+    const addToggleElement = (value, index) => {
+        const newToggleArr = [...toggleArr];
+
+        if (index === 0) {
+            newToggleArr[0] = value;
+        }
+        if (index === 1) {
+            if (toggleArr.length <= 0) newToggleArr[0] = "";
+            newToggleArr[1] = value; 
+        }
+
+        setToggleArr(newToggleArr);
+        
+    };
+
+
     const textAreaSplitter = (value) => {
         const combinedValue = value.split('\n')
         var answerElementItem = [];
@@ -48,6 +66,12 @@ function QuestionContainer({
 
     const [multiValue, setMultiValue] = useState([]);
     const [onEdit, setOnEdit] = useState(false);
+
+    useEffect(() => {
+        if (toggleArr.length > 0) {
+            handleChange('answerElement', toggleArr, index)
+        }
+    }, [toggleArr])
 
     useEffect(() => {
         multiValue.sort((a, b) => a - b);
@@ -107,11 +131,11 @@ function QuestionContainer({
                     <div>
                         <label>
                             <input type="radio" checked={question.value === 0} onChange={e => handleChange('value', 0, index)} disabled={isDisabled.fill} />
-                            <input type="text" onChange={e => handleChange('answerElement.0', e.target.value, index)} disabled={isDisabled.edit} />
+                            <input type="text" value={question['answerElement'] && question['answerElement'][0]} onChange={e => (addToggleElement(e.target.value, 0))} disabled={isDisabled.edit} />
                         </label>
                         <label>
                             <input type="radio" checked={question.value === 1} onChange={e => handleChange('value', 1, index)} disabled={isDisabled.fill} />
-                            <input type="text" onChange={e => handleChange('answerElement.1', e.target.value, index)} disabled={isDisabled.edit} />
+                            <input type="text" value={question['answerElement'] && question['answerElement'][1]} onChange={e => (addToggleElement(e.target.value, 1))} disabled={isDisabled.edit} />
                         </label>
                     </div>
                 }

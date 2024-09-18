@@ -87,8 +87,8 @@ export function Create({ email, username }) {
 
     const handleDuplicate = async () => {
         try {
-            const response = await fetch("/create", {
-                method: "DELETE",
+            const response = await fetch("/create/" + formId.current, {
+                method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 }

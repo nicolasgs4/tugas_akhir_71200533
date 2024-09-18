@@ -24,8 +24,7 @@ const questionSettingTemplate = {
         },
     4: {},
     5:  {
-                scaleSize: 0
-            
+            scaleSize: 0
         }
 }
 

@@ -35,7 +35,7 @@ export function View({ email, username }) {
 
     return (
         <div>
-            <div className="justify-start items-start gap-[52px] px-[102px] pt-[61px] inline-flex flex-wrap">
+            <div className="justify-start items-start gap-14 px-4 py-6 inline-flex flex-wrap">
                 {catalog.map((item, index) => (
                     <button key={'catalog' + index} className="w-[216px] rounded-lg shadow flex-col justify-start items-start inline-flex"
                         onClick={e => navigate("/form/" + item.form_id + "/view")}>

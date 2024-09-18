@@ -329,39 +329,43 @@ app.get("/value/:id", (req, res) => {
       let publishStart = req.query.publish_start == undefined ? null : req.query.publish_start;
       let publishEnd = req.query.publish_end == undefined ? null : req.query.publish_end;
 
-      connection.query('SELECT value_data FROM `value` WHERE form_sid = (SELECT form_sid FROM form WHERE form_id = ?) AND (? IS NULL OR value_timestamp > ?) AND (? IS NULL OR value_timestamp < ?)', [req.params.id, publishStart, publishStart, publishEnd, publishEnd], (err, results) => {
+      connection.query('SELECT v.value_data, f.form_question FROM `value` v LEFT JOIN form f ON v.form_sid = f.form_sid WHERE f.form_id = ? AND (? IS NULL OR value_timestamp > ?) AND (? IS NULL OR value_timestamp < ?)', [req.params.id, publishStart, publishStart, publishEnd, publishEnd], (err, results) => {
         if (err) {
           console.error('Error executing SQL query:', err);
           res.status(500).json({ error: 'Internal Server Error' });
           connection.release();
           return;
         }
-        const resultArray = [];
+        const valueArray = [];
+        const questionArray = [];
         results.forEach(element => {
-          resultArray.push(JSON.parse(element.value_data)[req.query.index])
+          valueArray.push(JSON.parse(element.value_data)[req.query.index])
+          questionArray.push(JSON.parse(element.form_question)[req.query.index])
         })
-        console.log(resultArray)
-        if (resultArray.length > 0 ) {
-          const newResults = {}
-          resultArray.map((element, index) => {
+        console.log(valueArray)
+        if (valueArray.length > 0 ) {
+          const newValue = {}
+          valueArray.map((element, index) => {
             if (req.query.type === "text") {
-              newResults[index] = element.value;
+              newValue[index] = element.value;
             } 
             else {
               if (element.value.length > 0) {
-                element.value.forEach(valueElement => {
-                  console.log(valueElement)
-                  if (newResults[valueElement]) {
-                    newResults[valueElement] += 1;
+                var i = 0;
+                Array.from(element.value).forEach(valueElement => {
+                  const questionElement = questionArray[i].answerElement[valueElement];
+                  if (newValue[questionElement]) {
+                    newValue[questionElement] += 1;
                   }
                   else {
-                    newResults[valueElement] = 1;
+                    newValue[questionElement] = 1;
                   }
+                  i += 1;
                 })
               }
             }
           });
-          res.json(newResults);
+          res.json(newValue);
           connection.release();
         } 
         else {
