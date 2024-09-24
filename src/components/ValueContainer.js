@@ -7,7 +7,7 @@ import { ArcElement, BarElement, CategoryScale, Chart, Filler, LinearScale, Line
 import { Bar, getElementAtEvent, Pie } from 'react-chartjs-2';
 
 
-export default function ValueContainer({id, index, question}) {
+export default function ValueContainer({ id, index, question, publishArray }) {
     const activeIndex = getQuestionTypeValue(question.type);
     const [valueData, setValueData] = useState(null);
     const chartRef = useRef();
@@ -29,37 +29,77 @@ export default function ValueContainer({id, index, question}) {
 
     const hasRendered = useRef(false);
 
-    const handleGetFormValue = async () => {
+    const HandleGetFormValue = async () => {
         try {
-            const response = await fetch("/value/" + id + "?index=" + index 
-                // + "?publish_start=" + "2024-08-22T05:06:05.000Z" + "&publish_end=" + "2024-08-28T16:26:40.000Z"
+            const response = await fetch("/value/" + id + "?index=" + index
+                + "&publish_start[]="
+                + publishArray[0].publish_start
+                + "&publish_start[]="
+                + publishArray[1].publish_start
+                + "&publish_end[]="
+                + publishArray[0].publish_end
+                + "&publish_end[]="
+                + publishArray[1].publish_end
                 , {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                }
-            });
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    }
+                });
             const res = await response.json();
             if (res) {
+                console.log(res)
                 if (activeIndex === 0) return;
-                if (activeIndex === 1) setValueData(Object.values(res))
+                if (activeIndex === 1) {
+                    setValueData(Object.values(res[0]))
+                }
                 else {
                     if (valueData) chartRef.current.reset();
                     const randomizedColor = [];
                     for (let i = 0; i < Object.keys(res).length; i++) {
                         randomizedColor.push(randomColor());
                     }
+                    
+                    const datasets = [];
+
+                    if (res.length > 0) {
+                        datasets.push({
+                            label: 'Jumlah',
+                            data: Object.values(res[0]),
+                            backgroundColor: '#FF4853',
+                            borderWidth: 0
+                        });
+                    }
+
+                    if (res.length > 1) {
+                        datasets.push({
+                            label: 'Jumlah',
+                            data: Object.values(res[1]),
+                            backgroundColor: '#3BC0ED',
+                            borderWidth: 0
+                        });
+                    }
+
                     setValueData({
-                        labels: Object.keys(res),
-                        datasets: [
-                            {
-                                label: 'Jumlah',
-                                data: Object.values(res),
-                                backgroundColor: defaultbackgroundColor.slice(0, Object.keys(res).length),
-                                borderWidth: 0
-                            }
-                        ]
-                    })
+                        labels: res.length > 0 ? Object.keys(res[0]) : [],
+                        datasets: datasets
+                    });
+
+                    // setValueData({
+                    //     labels: ["Chocolate", "Vanilla"],
+                    //     datasets: [
+                    //         {
+                    //             label: "Blue",
+                    //             backgroundColor: '#FF4853',
+                    //             data: [3,7]
+                    //         },
+                    //         {
+                    //             label: "Red",
+                    //             backgroundColor: '#3BC0ED',
+                    //             data: [4,3]
+                    //         }
+                    //     ]
+                    // })
                 }
                 return;
             }
@@ -71,16 +111,9 @@ export default function ValueContainer({id, index, question}) {
 
     useEffect(() => {
         if (!hasRendered.current) { hasRendered.current = true; return; }
-        handleGetFormValue();
-        console.log(id)
-        console.log(index)
-        console.log(question)
-    }, [])
-
-    useEffect(() => {
-        if (!hasRendered.current) { hasRendered.current = true; return; }
-        console.log(valueData)
-    }, [valueData])
+            HandleGetFormValue();
+            console.log(valueData)
+    }, [publishArray])
 
     Chart.register(ArcElement, BarElement, Tooltip, CategoryScale, LinearScale, Title, PointElement, LineElement, TimeScale, Filler);
 
@@ -99,15 +132,33 @@ export default function ValueContainer({id, index, question}) {
                 </label>
                 <div className='w-[600px] h-[300px] flex'>
                     {
-                        valueData != null
-                            ? <Pie ref={chartRef} data={valueData} onClick={e => { console.log(getElementAtEvent(chartRef.current, e)) }} />
-                            : null
+                        activeIndex === 1 &&
+                        <ul className='list-decimal'>
+                            { valueData != null &&
+                                valueData.map((element, index) => {
+                                    <li tabIndex="0" className={`w-full h-full break all`}>
+                                        dawda
+                                    </li>
+                                })
+                            }   
+                        </ul>
+                        
                     }
                     {
-                        valueData != null
-                            ? <Bar ref={chartRef} data={valueData} onClick={e => { console.log(getElementAtEvent(chartRef.current, e)) }} />
-                            : null
+                        activeIndex > 1 &&
+                        <div className='w-full'>
+                            {/* {
+                            valueData != null
+                                ? <Pie ref={chartRef} data={valueData} onClick={e => { console.log(getElementAtEvent(chartRef.current, e)) }} />
+                                : null
+                            } */}
+                            {
+                                valueData != null
+                                && <Bar ref={chartRef} data={valueData} onClick={e => { console.log(getElementAtEvent(chartRef.current, e)) }} />
+                            }
+                        </div>
                     }
+                    
                 </div>
             </div>
         </div>

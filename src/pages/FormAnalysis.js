@@ -15,7 +15,9 @@ export function FormAnalysis() {
 
     const [publishValues, setPublishValues] = useState();
     const [publishOptions, setPublishOptions] = useState([]);
-    const [publishIndex, setPublishIndex] = useState({0 : 0, 1 : 0 });
+    const [publishIndex, setPublishIndex] = useState({ a: 0, b: 0 });
+
+    const [publishArray, setPublishArray] = useState();
 
     const hasRendered = useRef(false);
 
@@ -24,6 +26,7 @@ export function FormAnalysis() {
     }
 
     const handleGetPublish = async () => {
+        if (publishArray != null) return;
         try {
             const response = await fetch("/publish/" + id, {
                 method: "GET",
@@ -33,12 +36,14 @@ export function FormAnalysis() {
             });
             const res = await response.json();
             if (res) {
-                setPublishValues(res)
                 const options = [];
-                for (let i = 0; i < res.length; i++) {
-                    options.push({ value: res[i].publish_start, label: formatDateToIso(res[i].publish_start) } )
-                } 
-                setPublishOptions(options)
+                console.log(res)
+                for (let i = res.length - 1; i >= 0; i--) {
+                    options.push({ value: res[i].publish_start, label: formatDateToIso(res[i].publish_start) })
+                }
+                setPublishOptions(options);
+                setPublishArray([res[res.length - 1], res[res.length - 1]])
+                setPublishValues(res.reverse())
                 return;
             }
             throw new Error(res.message);
@@ -84,14 +89,11 @@ export function FormAnalysis() {
         if (!hasRendered.current) { hasRendered.current = true; return; }
         handleGetForm();
         handleGetPublish();
+        if (publishArray != null) setPublishArray([publishValues[publishIndex.a], publishValues[publishIndex.b]]);
     }, [])
 
     useEffect(() => {
-        console.log(formValueData)
-    }, [formValueData])
-
-    useEffect(() => {
-        console.log(formValueData)
+        if (publishValues != null) setPublishArray([publishValues[publishIndex.a], publishValues[publishIndex.b]]);
     }, [publishIndex])
 
     return (
@@ -114,31 +116,42 @@ export function FormAnalysis() {
                             />
                         </label>
                     </div>
-                    <Select
-                        options={
-                            publishOptions
-                        }
-                        value={publishOptions[publishIndex[0]]}
-                        onChange={e => {
-                            setPublishIndex(prev => ({ ...prev, 0: publishOptions.indexOf(e) }))
-                        }}
-                        isSearchable={false}
-                        className='w-60 bg-neutral-50 rounded-lg shadow border border-sky-400 justify-stretch items-center'
-                    />
-                    <Select options={
-                        publishOptions
-                    }
-                        value={publishOptions[publishIndex[1]]}
-                        onChange={e => {
-                            setPublishIndex(prev => ({ ...prev, 1: publishOptions.indexOf(e) }))
-                        }}
-                        isSearchable={false}
-                        className='w-60 bg-neutral-50 rounded-lg shadow border border-sky-400 justify-stretch items-center'
-                    />
+                    <div className='w-full relative flex'>
+                        <div className='relative left-0'>
+                            <Select
+                                options={
+                                    publishOptions
+                                }
+                                value={publishOptions[publishIndex.a]}
+                                onChange={e => {
+                                    setPublishIndex(prev => ({ ...prev, a: publishOptions.indexOf(e) }))
+                                }}
+                                isSearchable={false}
+                                className='w-60 bg-neutral-50 rounded-lg shadow border border-sky-400 justify-stretch items-center'
+                            />
+                        </div>
+                        <div className='absolute right-0'>
+                            <Select options={
+                                publishOptions
+                            }
+                                value={publishOptions[publishIndex.b]}
+                                onChange={e => {
+                                    setPublishIndex(prev => ({ ...prev, b: publishOptions.indexOf(e) }))
+                                }}
+                                isSearchable={false}
+                                className='w-60 bg-neutral-50 rounded-lg shadow border border-sky-400 justify-stretch items-center '
+                            />
+                        </div>
+
+                    </div>
+
                     {
-                        publishValues !== null  ?
-                            <ValueContent id={id} formValueData={formValueData}/>
-                        : null
+                        publishArray != null &&
+                        <ValueContent
+                            id={id}
+                            formValueData={formValueData}
+                            publishArray={publishArray}
+                        />
                     }
                 </div>
             </div>

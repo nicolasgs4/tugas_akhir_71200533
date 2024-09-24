@@ -79,17 +79,16 @@ const ChartCard = ({valueData}) => {
                 if (res.length <= 0) return;
                 if (data) chartRef.current.reset();
                 const randomizedColor = [];
-                for (let i = 0; i < Object.keys(res).length; i++) {
+                for (let i = 0; i < Object.keys(res[0]).length; i++) {
                     randomizedColor.push(randomColor());
                 }
-                console.log(res)
                 setData({
-                    labels: Object.keys(res),
+                    labels: Object.keys(res[0]),
                     datasets: [
                         {
                             label: 'Jumlah',
-                            data: Object.values(res),
-                            backgroundColor: defaultbackgroundColor.slice(0, Object.keys(res).length),
+                            data: Object.values(res[0]),
+                            backgroundColor: defaultbackgroundColor.slice(0, Object.keys(res[0]).length),
                             borderWidth: 0
                         }
                     ]

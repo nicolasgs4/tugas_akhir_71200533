@@ -4,11 +4,13 @@ const mysql = require('mysql2');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
+const { elements } = require('chart.js');
+const { format, parseISO } = require('date-fns');
 dotenv.config({ path: './../.env' });
 
 const port = 5000;
 
-app.use(bodyParser.urlencoded({extended: false}))
+app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 const pool = mysql.createPool({
@@ -35,7 +37,7 @@ app.listen(port, () => {
 });
 
 app.post('/login', (req, res) => {
-  const {email, password} = req.body;
+  const { email, password } = req.body;
 
   pool.getConnection((err, connection) => {
     if (err) {
@@ -43,7 +45,7 @@ app.post('/login', (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
       connection.release();
       return;
-    } else{
+    } else {
       pool.query('SELECT * FROM user WHERE user_email = ? AND user_password = ?', [email, password], (err, results) => {
         if (err) {
           console.error('Error executing SQL query:', err);
@@ -85,7 +87,7 @@ app.get('/dashboard', (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
       connection.release();
       return;
-    } 
+    }
     else {
       connection.query('SELECT f.form_id, f.form_title, f.form_question, COUNT(v.form_sid) AS value_count FROM form f LEFT JOIN `value` v ON f.form_sid = v.form_sid GROUP BY f.form_sid, f.form_title', (err, results) => {
         if (err) {
@@ -93,7 +95,7 @@ app.get('/dashboard', (req, res) => {
           res.status(500).json({ error: 'Internal Server Error' });
           connection.release();
           return;
-        } 
+        }
         if (results.length > 0) {
           const newResults = {};
           results.forEach(element => {
@@ -108,7 +110,7 @@ app.get('/dashboard', (req, res) => {
               question_type: questionTypes,
               value_count: element.value_count
             };
-          });          
+          });
           res.json(newResults);
           connection.release();
         }
@@ -139,20 +141,20 @@ app.get('/progress', (req, res) => {
         WHERE NOW() BETWEEN p.publish_start AND p.publish_end
           AND p.min_respondent IS NOT NULL
           AND p.min_respondent > 0
-        GROUP BY p.publish_end, p.min_respondent, f.form_title;`, 
+        GROUP BY p.publish_end, p.min_respondent, f.form_title;`,
         (err, results) => {
-        if (err) {
-          console.error('Error executing SQL query:', err);
-          res.status(500).json({ error: 'Internal Server Error' });
-          connection.release();
-          return;
-        }
-        if (results.length > 0) {
-          console.log(results)
-          res.json(results);
-          connection.release();
-        }
-      })
+          if (err) {
+            console.error('Error executing SQL query:', err);
+            res.status(500).json({ error: 'Internal Server Error' });
+            connection.release();
+            return;
+          }
+          if (results.length > 0) {
+            console.log(results)
+            res.json(results);
+            connection.release();
+          }
+        })
     }
   })
 })
@@ -221,7 +223,7 @@ app.get('/create', (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
       connection.release();
       return;
-    } 
+    }
     else {
       connection.query('SELECT form.form_id, form.form_title, user.user_name, catalog.date_of_creation FROM catalog INNER JOIN form ON catalog.form_sid = form.form_sid INNER JOIN user ON catalog.user_sid = user.user_sid', (err, results) => {
         if (err) {
@@ -241,7 +243,6 @@ app.get('/create', (req, res) => {
 
 app.post('/create', (req, res) => {
   const { email } = req.body;
-
   pool.getConnection((err, connection) => {
     if (err) {
       console.error('Error executing SQL query:', err);
@@ -249,22 +250,55 @@ app.post('/create', (req, res) => {
       connection.release();
       return;
     }
-    connection.beginTransaction((err) => {
-      if (err) connection.rollback(() => connection.release());
-      else {
-        connection.query('INSERT INTO form VALUES (DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT)', (err) => { 
-          if (err) {connection.rollback(() => connection.release());}
-        })
-        connection.query('SELECT LAST_INSERT_ID() as form_sid FROM form', (err, results) => {
-          if (err) {connection.rollback();}
+    connection.beginTransaction((err, results) => {
+      connection.query('INSERT INTO form VALUES (DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT)');
+      connection.query('SELECT LAST_INSERT_ID() AS form_sid', (err, results) => {
+        if (err) { connection.rollback(); }
+        else {
+          connection.query(
+            'INSERT INTO catalog (catalog_sid, form_sid, user_sid, date_of_creation) VALUES (DEFAULT, ?, (SELECT user_sid FROM user WHERE user_email = ?), DEFAULT)'
+            , [results[0].form_sid, email]
+          )
+        }
+      })
+      if (err) { connection.rollback(() => connection.release()); console.log(err); }
+      else { connection.commit(); connection.release(); res.json(results); }
+    })
+  })
+});
+
+app.post('/create/:id', (req, res) => {
+  const { email } = req.body;
+  const form_id = req.params.id;
+  console.log(form_id)
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error('Error executing SQL query:', err);
+      res.status(500).json({ error: 'Internal Server Error' });
+      connection.release();
+      return;
+    }
+    connection.beginTransaction((err, results) => {
+      connection.query('SELECT form_question FROM form WHERE form_id = ?', [form_id], (err, results) => {
+        console.log(results)
+        if (err) { connection.rollback(); }
+        else {
+          connection.query('INSERT INTO form VALUES (DEFAULT, DEFAULT, DEFAULT, DEFAULT, ?)', [results[0].form_question]);
+        }
+        connection.query('SELECT LAST_INSERT_ID() AS form_sid', (err, results) => {
+          if (err) { connection.rollback(); }
           else {
-            connection.query('INSERT INTO catalog (catalog_sid, form_sid, user_sid, date_of_creation) VALUES (DEFAULT, ?, (SELECT user_sid FROM user WHERE user_email = ?), DEFAULT)', [results[0].form_sid, email], (err) => {
-              if (err) {connection.rollback(() => connection.release()); console.log(err);}
-              else { connection.commit(); connection.release(); res.json(results); }
-            })
+            console.log(results)
+            connection.query(
+              'INSERT INTO catalog (catalog_sid, form_sid, user_sid, date_of_creation) VALUES (DEFAULT, ?, (SELECT user_sid FROM user WHERE user_email = ?), DEFAULT)'
+              , [results[0].form_sid, email]
+            )
           }
         })
-    }})
+      })
+      if (err) { connection.rollback(() => connection.release()); console.log(err); }
+      else { connection.commit(); connection.release(); res.json(results); }
+    })
   })
 });
 
@@ -276,18 +310,16 @@ app.delete('/create/:id', (req, res) => {
       connection.release();
       return;
     }
-    connection.beginTransaction((err) => {
-      if (err) connection.rollback(() => connection.release());
+    connection.beginTransaction((err, results) => {
+      connection.query("DELETE FROM catalog WHERE form_sid IN (SELECT form_sid FROM form WHERE form_id = ?);", [req.params.id])
+      connection.query("DELETE FROM publish WHERE form_sid IN (SELECT form_sid FROM form WHERE form_id = ?);", [req.params.id])
+      connection.query("DELETE FROM \`value\` WHERE form_sid IN (SELECT form_sid FROM form WHERE form_id = ?);", [req.params.id])
+      connection.query("DELETE FROM form WHERE form_id = ?", [req.params.id])
+      if (err) { connection.rollback(() => connection.release()); console.log(err); }
       else {
-        connection.query('DELETE catalog FROM catalog INNER JOIN form ON catalog.form_sid = form.form_sid WHERE form.form_id = ?', [req.params.id], (err) => {
-          if (err) { connection.rollback(() => connection.release()); console.log(err); }
-          else {
-            connection.query('DELETE form FROM form WHERE form_id = ?', [req.params.id], (err, results) => {
-              if (err) { connection.rollback(() => connection.release()); console.log(err); }
-              else { connection.commit(); connection.release(); res.json(results);}
-            })
-          }
-        })
+        connection.commit();
+        connection.release();
+        res.json(results);
       }
     })
   })
@@ -320,63 +352,148 @@ app.get("/form/:id", (req, res) => {
 app.get("/value/:id", (req, res) => {
   pool.getConnection((err, connection) => {
     if (err) {
-      console.error('Error executing SQL query:', err);
-      res.status(500).json({ error: 'Internal Server Error' });
-      connection.release();
-      return;
+      console.error('Error getting database connection:', err);
+      return res.status(500).json({ error: 'Internal Server Error' });
     }
-    else {
-      let publishStart = req.query.publish_start == undefined ? null : req.query.publish_start;
-      let publishEnd = req.query.publish_end == undefined ? null : req.query.publish_end;
-
-      connection.query('SELECT v.value_data, f.form_question FROM `value` v LEFT JOIN form f ON v.form_sid = f.form_sid WHERE f.form_id = ? AND (? IS NULL OR value_timestamp > ?) AND (? IS NULL OR value_timestamp < ?)', [req.params.id, publishStart, publishStart, publishEnd, publishEnd], (err, results) => {
+    connection.query(
+      `SELECT form_question FROM form WHERE form_id = ?`,
+      [req.params.id],
+      async (err, results) => {
         if (err) {
           console.error('Error executing SQL query:', err);
-          res.status(500).json({ error: 'Internal Server Error' });
           connection.release();
-          return;
+          return res.status(500).json({ error: 'Internal Server Error' });
         }
-        const valueArray = [];
-        const questionArray = [];
-        results.forEach(element => {
-          valueArray.push(JSON.parse(element.value_data)[req.query.index])
-          questionArray.push(JSON.parse(element.form_question)[req.query.index])
-        })
-        console.log(valueArray)
-        if (valueArray.length > 0 ) {
-          const newValue = {}
-          valueArray.map((element, index) => {
-            if (req.query.type === "text") {
-              newValue[index] = element.value;
-            } 
-            else {
-              if (element.value.length > 0) {
-                var i = 0;
-                Array.from(element.value).forEach(valueElement => {
-                  const questionElement = questionArray[i].answerElement[valueElement];
-                  if (newValue[questionElement]) {
-                    newValue[questionElement] += 1;
-                  }
-                  else {
-                    newValue[questionElement] = 1;
-                  }
-                  i += 1;
-                })
+
+        const questionArray = JSON.parse(results[0].form_question)[req.query.index].answerElement;
+        const newValueArray = [];
+        const publishStart = req.query.publish_start ? Array.from(new Set(req.query.publish_start)) : [];
+        const publishEnd = req.query.publish_end ? Array.from(new Set(req.query.publish_end)) : [];
+        const type = JSON.parse(results[0].form_question)[req.query.index].type;
+        console.log(publishStart)
+        console.log(publishEnd)
+
+        if (publishStart.length <= 0 && publishEnd.length <= 0) {
+          connection.query(
+            `SELECT v.value_data FROM \`value\` v 
+              LEFT JOIN form f ON v.form_sid = f.form_sid WHERE f.form_id = ?`,
+            [req.params.id],
+            (err, results) => {
+              if (err) {
+                console.error('Error executing SQL query:', err);
+                connection.release();
+                return res.status(500).json({ error: 'Internal Server Error' });
               }
+              if (results.length > 0) {
+                let newValue;
+                if (type !== 'text') {
+                  newValue = questionArray.reduce((acc, curr) => {
+                    acc[String(curr)] = 0;
+                    return acc;
+                  }, {});
+                } else {
+                  newValue = {};
+                }
+                const valueArray = results.map(element =>
+                  JSON.parse(element.value_data)[req.query.index]
+                ).filter(Boolean);
+                if (valueArray.length > 0) {
+                  valueArray.forEach((element, index) => {
+                    if (type === "text") {
+                      newValue[index] = element.value;
+                    } else {
+                      if (element.value.length > 0) {
+                        element.value.forEach(i => {
+                          const questionElement = questionArray[i];
+                          newValue[questionElement] = (newValue[questionElement] || 0) + 1;
+                        });
+                      }
+                    }
+                  });
+                }
+                newValueArray.push(newValue);
+                res.json(newValueArray);
+              } else {
+                res.json([]);
+              }
+              connection.release();
             }
+          );
+        } else {
+          const promises = publishStart.map((start, i) => {
+            return new Promise((resolve, reject) => {
+              let newValue;
+              if (type !== 'text') {
+                newValue = questionArray.reduce((acc, curr) => {
+                  acc[String(curr)] = 0;
+                  return acc;
+                }, {});
+              } else {
+                newValue = {};
+              }
+              connection.query(
+                `SELECT v.value_data FROM \`value\` v 
+                  LEFT JOIN form f ON v.form_sid = f.form_sid WHERE f.form_id = ?
+                  AND (
+                    (? IS NULL AND ? IS NULL) 
+                    OR 
+                    (v.value_timestamp BETWEEN ? AND ?)
+                )`,
+                [
+                  req.params.id,
+                  start || null,
+                  publishEnd[i] || null,
+                  format(parseISO(start), 'yyyy-MM-dd HH:mm:ss'),
+                  format(parseISO(publishEnd[i]), 'yyyy-MM-dd HH:mm:ss')
+                ],
+                (err, results) => {
+                  if (err) {
+                    console.error('Error executing SQL query:', err);
+                    return reject(err);
+                  }
+                  const valueArray = results.map(element =>
+                    JSON.parse(element.value_data)[req.query.index]
+                  ).filter(Boolean);
+
+                  if (valueArray.length > 0) {
+                    valueArray.forEach((element, index) => {
+                      if (type === "text") {
+                        newValue[index] = element.value;
+                      } 
+                      else {
+                        if (element.value.length > 0) {
+                          element.value.forEach(i => {
+                            const questionElement = questionArray[i];
+                            newValue[questionElement] = (newValue[questionElement] || 0) + 1;
+                          });
+                        }
+                      }
+                    });
+                  }
+                  newValueArray.push(newValue);
+                  resolve();
+                }
+              );
+            });
           });
-          res.json(newValue);
-          connection.release();
-        } 
-        else {
-          res.json([]);
-          connection.release();
-          return;
+
+          try {
+            await Promise.all(promises);
+            console.log(newValueArray)
+            res.json(newValueArray);
+          } catch (error) {
+            console.error('Error in processing:', error);
+            res.status(500).json({ error: 'Internal Server Error' });
+          } finally {
+            connection.release();
+          }
         }
-      })
-    }
-  })
-})
+      }
+    );
+  });
+});
+
+
 
 app.patch('/form/:id', (req, res) => {
   const { formJson, formTitle, formDescription } = req.body;
@@ -401,7 +518,7 @@ app.patch('/form/:id', (req, res) => {
         }
       })
     })
-  } 
+  }
 
   if (edit === 'question') {
     const form_question = JSON.stringify(formJson)
@@ -433,7 +550,7 @@ app.post("/form/:id/fill", (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
       connection.release();
       return;
-    } 
+    }
     else {
       connection.query('SELECT form_sid FROM form WHERE form_id = ?', [req.params.id], (err, results) => {
         if (err) {
@@ -464,7 +581,7 @@ app.get("/publish/:id", (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
       connection.release();
       return;
-    } 
+    }
     else {
       connection.query('SELECT form_sid FROM form WHERE form_id = ?', [req.params.id], (err, results) => {
         if (err) {

@@ -1,19 +1,19 @@
 import './../App.css';
 import { getQuestionTypeValue } from '../data/QuestionData';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ResizableTextArea from './ResizableTextArea';
 
 function QuestionContainer({
     sectionIndex,
     question,
     index,
-    handleChange, handleDelete, 
+    handleChange, handleDelete,
     focusIndex, handleFocus,
-    isDisabled}
+    isDisabled }
 ) {
     const activeIndex = getQuestionTypeValue(question.type);
 
-    const [toggleArr, setToggleArr] = useState(question['answerElement']);
+    const [toggleArr, setToggleArr] = useState();
 
     const addToggleElement = (value, index) => {
         const newToggleArr = [...toggleArr];
@@ -23,52 +23,59 @@ function QuestionContainer({
         }
         if (index === 1) {
             if (toggleArr.length <= 0) newToggleArr[0] = "";
-            newToggleArr[1] = value; 
+            newToggleArr[1] = value;
         }
 
         setToggleArr(newToggleArr);
-        
-    };
 
+    };
 
     const textAreaSplitter = (value) => {
         const combinedValue = value.split('\n')
         var answerElementItem = [];
         combinedValue.map((element, elementIndex) =>
-            answerElementItem = [...answerElementItem, elementIndex=element]
+            answerElementItem = [...answerElementItem, elementIndex = element]
         )
         if (answerElementItem <= 0 && answerElementItem == '') answerElementItem = null
         return answerElementItem;
-    } 
+    }
 
     const scaleElement = () => {
         var scaleElementItem = [];
         for (var i = 0; i < question['setting']['scaleSize'] * 2 + 3; i++) {
             const j = i;
             scaleElementItem = [...scaleElementItem,
-                <button key={"circle" + i} checked={question['value'] == i} onClick={() => handleChange('value', j, index)} disabled={isDisabled.fill}>
-                    {
-                        question['value'] >= i && typeof(question['value']) == "number" ? 
-                            <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="25" cy="25" r="23.5" stroke="black" strokeWidth="3" />
-                                <circle cx="25" cy="25" r="18.5" fill="black" />
-                            </svg>
-                            :
-                            <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="25" cy="25" r="23.5" stroke="black" strokeWidth="3" />
-                            </svg> 
-                    }
-                </button>
+            <button key={"circle" + i} checked={question['value'] == i} onClick={() => handleChange('value', j, index)} disabled={isDisabled.fill}>
+                {
+                    question['value'] >= i && typeof (question['value']) == "number" ?
+                        <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="25" cy="25" r="23.5" stroke="black" strokeWidth="3" />
+                            <circle cx="25" cy="25" r="18.5" fill="black" />
+                        </svg>
+                        :
+                        <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="25" cy="25" r="23.5" stroke="black" strokeWidth="3" />
+                        </svg>
+                }
+            </button>
             ]
-        } 
+        }
         return scaleElementItem;
     }
 
     const [multiValue, setMultiValue] = useState([]);
     const [onEdit, setOnEdit] = useState(false);
 
+    const hasRendered = useRef(false);
+
+
     useEffect(() => {
-        if (toggleArr.length > 0) {
+        setToggleArr(question['answerElement'] === null ? [] : question['answerElement']);
+    }, [])
+
+    useEffect(() => {
+        if (toggleArr !== null && toggleArr !== undefined && toggleArr.length > 0) {
+            console.log(toggleArr)
             handleChange('answerElement', toggleArr, index)
         }
     }, [toggleArr])
@@ -81,13 +88,13 @@ function QuestionContainer({
     return (
         <div className='w-full '>
             {
-                activeIndex == 0 ? 
+                activeIndex == 0 ?
                     <div className='flex flex-wrap'>
                         <div className='h-16 bg-sky-400 text-neutral-50 p-2 rounded-xl'>Halaman {sectionIndex}</div>
                     </div>
-                : null
+                    : null
             }
-            
+
             <div id={'question' + index} key={index} tabIndex="0"
                 onClick={() => handleFocus(index)}
                 className={`w-full -translate-y-6 pl-5 pr-3 py-3 bg-neutral-50 rounded-xl border border-sky-400 flex-col justify-start items-start gap-5 inline-flex relative cursor cursor-pointer select-none ${focusIndex == index ? 'border-l-4 border-r border-t-8 border-b border-sky-400' : ''}`}
@@ -130,12 +137,12 @@ function QuestionContainer({
                     activeIndex === 2 &&
                     <div>
                         <label>
-                            <input type="radio" checked={question.value === 0} onChange={e => handleChange('value', 0, index)} disabled={isDisabled.fill} />
-                            <input type="text" value={question['answerElement'] && question['answerElement'][0]} onChange={e => (addToggleElement(e.target.value, 0))} disabled={isDisabled.edit} />
+                            <input type="radio" checked={question.value[0] === 0} onChange={e => handleChange('value', [0], index)} disabled={isDisabled.fill} />
+                            <input type="text" value={question['answerElement'] === null ? "" : question['answerElement'][0]} onChange={e => (addToggleElement(e.target.value, 0))} disabled={isDisabled.edit} />
                         </label>
                         <label>
-                            <input type="radio" checked={question.value === 1} onChange={e => handleChange('value', 1, index)} disabled={isDisabled.fill} />
-                            <input type="text" value={question['answerElement'] && question['answerElement'][1]} onChange={e => (addToggleElement(e.target.value, 1))} disabled={isDisabled.edit} />
+                            <input type="radio" checked={question.value[0] === 1} onChange={e => handleChange('value', [1], index)} disabled={isDisabled.fill} />
+                            <input type="text" value={question['answerElement'] === null ? "" : question['answerElement'][1]} onChange={e => (addToggleElement(e.target.value, 1))} disabled={isDisabled.edit} />
                         </label>
                     </div>
                 }
@@ -218,8 +225,6 @@ function QuestionContainer({
                 {
                     activeIndex === 4 &&
                     <div>
-                        adaw
-
                     </div>
                 }
 
