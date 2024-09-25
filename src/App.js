@@ -9,6 +9,8 @@ import { Error } from './pages/Error';
 import AuthProvider from "./hooks/AuthProvider";
 import PrivateRoute from "./router/PrivateRoute";
 import FormAnalysis from './pages/FormAnalysis';
+import { End } from './pages/End';
+
 
 function App() {
     return (
@@ -24,6 +26,7 @@ function App() {
                   <Route path="/form/:id/edit" element={<Form />} />
                   <Route path="/form/:id/view" element={<FormValue />} />
                   <Route path="/form/:id/analysis" element={<FormAnalysis />} />
+                  <Route path="/end" element={<End />}/>
                   <Route path="/*" element={useNavigate("/login")} />
               </Route>
             </Routes>

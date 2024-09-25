@@ -138,7 +138,7 @@ export default function ValueContainer({ id, index, question, publishArray }) {
                     }
                     <ResizableTextArea disabled={true} type='text' className='w-3/4 bg-neutral-50 pt-4 px-2 flex-wrap overflow-auto' value={question.name} resize='vertical' />
                 </label>
-                <div className='w-[600px] max-h-[300px]  flex'>
+                <div className='w-[600px] max-h-[270px]  flex'>
                     {
                         activeIndex === 1 && (
                             <div className=''>

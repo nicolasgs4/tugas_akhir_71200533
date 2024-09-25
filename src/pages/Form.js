@@ -4,7 +4,7 @@ import './../App.css';
 import QuestionInspector from '../components/QuestionInspector';
 import QuestionContent from '../components/QuestionContent';
 import QuestionList from '../components/QuestionList';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import myData from './../output.json';
 import { useCookies } from 'react-cookie';
 
