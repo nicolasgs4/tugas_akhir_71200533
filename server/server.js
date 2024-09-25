@@ -365,14 +365,12 @@ app.get("/value/:id", (req, res) => {
           return res.status(500).json({ error: 'Internal Server Error' });
         }
 
-        const questionArray = JSON.parse(results[0].form_question)[req.query.index].answerElement;
+        const questionArray = JSON.parse(results[0].form_question)[req.query.index];
+        const answerElement = questionArray.answerElement || [];
         const newValueArray = [];
         const publishStart = req.query.publish_start ? Array.from(new Set(req.query.publish_start)) : [];
         const publishEnd = req.query.publish_end ? Array.from(new Set(req.query.publish_end)) : [];
-        const type = JSON.parse(results[0].form_question)[req.query.index].type;
-        console.log(publishStart)
-        console.log(publishEnd)
-
+        const type = questionArray.type;
         if (publishStart.length <= 0 && publishEnd.length <= 0) {
           connection.query(
             `SELECT v.value_data FROM \`value\` v 
@@ -386,13 +384,19 @@ app.get("/value/:id", (req, res) => {
               }
               if (results.length > 0) {
                 let newValue;
-                if (type !== 'text') {
-                  newValue = questionArray.reduce((acc, curr) => {
+                if (type !== 'text' && type !== 'scale') {
+                  newValue = answerElement.reduce((acc, curr) => {
                     acc[String(curr)] = 0;
                     return acc;
                   }, {});
-                } else {
+                } else if (type === 'text') {
                   newValue = {};
+                } else if (type === 'scale') {
+                  newValue = {};
+                  const scaleSize = Number(questionArray.setting.scaleSize)
+                  for (let i = 0; i < scaleSize * 2 + 3; i++) {
+                    newValue[i] = 0
+                  }
                 }
                 const valueArray = results.map(element =>
                   JSON.parse(element.value_data)[req.query.index]
@@ -401,10 +405,14 @@ app.get("/value/:id", (req, res) => {
                   valueArray.forEach((element, index) => {
                     if (type === "text") {
                       newValue[index] = element.value;
-                    } else {
+                    } 
+                    else if (type === "scale") {
+                      newValue[element.value] = (newValue[element.value] || 0) + 1;
+                    } 
+                    else {
                       if (element.value.length > 0) {
                         element.value.forEach(i => {
-                          const questionElement = questionArray[i];
+                          const questionElement = answerElement[i];
                           newValue[questionElement] = (newValue[questionElement] || 0) + 1;
                         });
                       }
@@ -423,13 +431,19 @@ app.get("/value/:id", (req, res) => {
           const promises = publishStart.map((start, i) => {
             return new Promise((resolve, reject) => {
               let newValue;
-              if (type !== 'text') {
-                newValue = questionArray.reduce((acc, curr) => {
+              if (type !== 'text' && type !== 'scale') {
+                newValue = answerElement.reduce((acc, curr) => {
                   acc[String(curr)] = 0;
                   return acc;
                 }, {});
-              } else {
+              } else if (type === 'text') {
                 newValue = {};
+              } else if (type === 'scale') {
+                newValue = {};
+                const scaleSize = Number(questionArray.setting.scaleSize)
+                for (let i = 0; i < scaleSize * 2 + 3; i++) {
+                  newValue[i] = 0
+                }
               }
               connection.query(
                 `SELECT v.value_data FROM \`value\` v 
@@ -454,16 +468,18 @@ app.get("/value/:id", (req, res) => {
                   const valueArray = results.map(element =>
                     JSON.parse(element.value_data)[req.query.index]
                   ).filter(Boolean);
-
                   if (valueArray.length > 0) {
                     valueArray.forEach((element, index) => {
                       if (type === "text") {
                         newValue[index] = element.value;
                       } 
+                      else if (type === "scale") {
+                        newValue[element.value] = (newValue[element.value] || 0) + 1;
+                      } 
                       else {
                         if (element.value.length > 0) {
                           element.value.forEach(i => {
-                            const questionElement = questionArray[i];
+                            const questionElement = answerElement[i];
                             newValue[questionElement] = (newValue[questionElement] || 0) + 1;
                           });
                         }
@@ -543,7 +559,7 @@ app.patch('/form/:id', (req, res) => {
 });
 
 app.post("/form/:id/fill", (req, res) => {
-  const { values, timestamp } = req.body;
+  const { values } = req.body;
   pool.getConnection((err, connection) => {
     if (err) {
       console.error('Error executing SQL query:', err);
@@ -562,7 +578,7 @@ app.post("/form/:id/fill", (req, res) => {
           connection.beginTransaction((err) => {
             if (err) connection.rollback(() => connection.release());
             else {
-              connection.query('INSERT INTO `value` (value_sid, form_sid, value_data, value_timestamp) VALUES (DEFAULT, ?, ?, ?)', [results[0].form_sid, JSON.stringify(values), timestamp], (err) => {
+              connection.query('INSERT INTO `value` (value_sid, form_sid, value_data, value_timestamp) VALUES (DEFAULT, ?, ?, NOW())', [results[0].form_sid, JSON.stringify(values)], (err) => {
                 if (err) { connection.rollback(() => connection.release()); console.log(err); }
                 else { connection.commit(); connection.release(); res.json(results); }
               })
@@ -609,9 +625,7 @@ app.get("/publish/:id", (req, res) => {
 })
 
 app.post("/publish/:id", (req, res) => {
-  const { start, end } = req.body;
-  console.log(start);
-  console.log(end);
+  const { end, min_respondent } = req.body;
   pool.getConnection((err, connection) => {
     if (err) {
       console.error('Error executing SQL query:', err);
@@ -629,7 +643,7 @@ app.post("/publish/:id", (req, res) => {
         }
         else {
           console.log(results[0])
-          connection.query('INSERT INTO publish (form_sid, publish_start, publish_end) VALUES (?, ?, ?)', [results[0].form_sid, start, end], (err, results) => {
+          connection.query('INSERT INTO publish (form_sid, publish_start, publish_end, min_respondent) VALUES (?, NOW(), ?, ?)', [results[0].form_sid, end, min_respondent], (err, results) => {
             if (err) {
               console.error('Error executing SQL query:', err);
               res.status(500).json({ error: 'Internal Server Error' });

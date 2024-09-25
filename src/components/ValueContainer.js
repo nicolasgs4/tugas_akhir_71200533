@@ -48,10 +48,11 @@ export default function ValueContainer({ id, index, question, publishArray }) {
                 });
             const res = await response.json();
             if (res) {
-                console.log(res)
                 if (activeIndex === 0) return;
                 if (activeIndex === 1) {
-                    setValueData(Object.values(res[0]))
+                    setValueData([])
+                    setValueData(prev => [...prev, Object.values(res[0])]);
+                    if (res.length > 1) setValueData(prev => [...prev, Object.values(res[1])]);
                 }
                 else {
                     if (valueData) chartRef.current.reset();
@@ -118,9 +119,16 @@ export default function ValueContainer({ id, index, question, publishArray }) {
     Chart.register(ArcElement, BarElement, Tooltip, CategoryScale, LinearScale, Title, PointElement, LineElement, TimeScale, Filler);
 
     return (
-        <div className='w-full '>
+        <div className='w-full h-full '>
+            {
+                activeIndex == 0 ?
+                    <div className='flex flex-wrap translate-y-6'>
+                        <div className='h-16 bg-sky-400 text-neutral-50 p-2 rounded-xl'>Halaman 1</div>
+                    </div>
+                    : null
+            }
             <div id={'question' + index} key={index} tabIndex="0"
-                className={`w-full pl-5 pr-3 py-3 bg-neutral-50 rounded-xl border border-sky-400 flex-col justify-start items-start gap-5 inline-flex relative cursor cursor-pointer select-none`}
+                className={`w-full pl-5 pr-3 py-3  bg-neutral-50 rounded-xl border border-sky-400 flex-col justify-start items-start gap-5 flex flex-wrap relative cursor cursor-pointer select-none ${activeIndex === 0 ? '' : 'h-[400px]'}`}
             >
                 <label className='h-fit w-full flex text-black text-2xl font-normal relative flex-wrap'>
                     {
@@ -130,19 +138,45 @@ export default function ValueContainer({ id, index, question, publishArray }) {
                     }
                     <ResizableTextArea disabled={true} type='text' className='w-3/4 bg-neutral-50 pt-4 px-2 flex-wrap overflow-auto' value={question.name} resize='vertical' />
                 </label>
-                <div className='w-[600px] h-[300px] flex'>
+                <div className='w-[600px] max-h-[300px]  flex'>
                     {
-                        activeIndex === 1 &&
-                        <ul className='list-decimal'>
-                            { valueData != null &&
-                                valueData.map((element, index) => {
-                                    <li tabIndex="0" className={`w-full h-full break all`}>
-                                        dawda
-                                    </li>
-                                })
-                            }   
-                        </ul>
-                        
+                        activeIndex === 1 && (
+                            <div className=''>
+                                <div className='flex space-x-12'>
+                                    {valueData != null &&
+                                        valueData.map((element,index) => (
+                                            <ul key={index} className='list-none space-y-4 overflow-y-scroll max-h-[300px]'>
+                                                {
+                                                    element.map((item, index) => (
+                                                        <li key={index} tabIndex="0" className="w-[250px] h-10 p-2.5 bg-[#fcfcfc] rounded-[10px] border border-[#3bc0ed] justify-start items-center gap-2.5 flex">
+                                                            <div className="text-black text-base font-normal font-['Montserrat']">{item}</div>
+                                                        </li>
+                                                    ))
+                                                }
+                                            </ul>
+                                        ))
+                                    }
+                                    {/* <ul className='list-none space-y-4 '>
+                                        {valueData != null &&
+                                            valueData.map((element, index) => (
+                                                <li key={index} tabIndex="0" className="w-[250px] h-10 p-2.5 bg-[#fcfcfc] rounded-[10px] border border-[#3bc0ed] justify-start items-center gap-2.5 flex">
+                                                    <div className="text-black text-base font-normal font-['Montserrat']">{element}</div>
+                                                </li>
+                                            ))
+                                        }
+                                    </ul>
+                                    <ul className='list-none space-y-4 '>
+                                        {valueData != null &&
+                                            valueData.map((element, index) => (
+                                                <li key={index} tabIndex="0" className="w-[250px] h-10 p-2.5 bg-[#fcfcfc] rounded-[10px] border border-[#3bc0ed] justify-start items-center gap-2.5 flex">
+                                                    <div className="text-black text-base font-normal font-['Montserrat']">{element}</div>
+                                                </li>
+                                            ))
+                                        }
+                                    </ul> */}
+                                </div>
+                            </div>
+                        )
                     }
                     {
                         activeIndex > 1 &&

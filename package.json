@@ -30,6 +30,7 @@
     "react-scripts": "5.0.1",
     "react-scroll-into-view": "^2.1.2",
     "react-select": "^5.8.0",
+    "react-tailwindcss-datepicker": "^1.7.2",
     "reactjs-popup": "^2.0.6",
     "resolve-url-loader": "^5.0.0",
     "skripsi-form-app": "file:",

@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 import "react-datepicker/dist/react-datepicker.css";
 import { useEffect, useRef, useState } from 'react';
 import ReactDatePicker, { registerLocale } from 'react-datepicker';
+import Datepicker from "react-tailwindcss-datepicker";
 import { id } from 'date-fns/locale/id';
 import moment from 'moment/moment';
 import { formatISO, parseISO } from 'date-fns';
@@ -62,7 +63,7 @@ export function PublishPopup({ closeModal }) {
                     "Content-Type": "application/json",
                 }, 
                 body: JSON.stringify({
-                    start: formatDateToIso(new Date()), end: endDate
+                    end: endDate
                 })
             });
             const res = await response.json();
@@ -88,6 +89,11 @@ export function PublishPopup({ closeModal }) {
         
     }, [endDate])
     
+    const [value, setValue] = useState({
+        startDate: null,
+        endDate: null
+    });
+
     return (
         <div className={"w-[600px] h-[500px] fixed inset-0 m-auto flex flex-wrap items-center justify-center "}>
             <div className="w-[600px] h-[500px] left-0 top-0 rounded-xl bg-stone-900 p-6 flex flex-col gap-5 relative">
@@ -113,6 +119,16 @@ export function PublishPopup({ closeModal }) {
                             timeCaption="Time"
                             dateFormat="YYYY-MM-dd HH:mm:ss"
                             shouldCloseOnSelect={false}
+                        />
+                        <Datepicker
+                            primaryColor={"orange"}
+                        
+                            value={value}
+                            onChange={newValue => setValue(newValue)}
+                            placeholderText="Select date"
+                            showTimeSelect={false} 
+                            dateFormat="YYYY-MM-dd HH:mm:ss" 
+                            classNames=''
                         />
                         <button className='text-white' onClick={() => handlePostPublish()}>Publish</button>
                     </>

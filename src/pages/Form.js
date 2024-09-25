@@ -144,14 +144,13 @@ export function Form() {
             combinedValues.push({"id": element.id, "value": element.value, "type": element.type})
             element.value = [];
         })
-        console.log(combinedValues)
         try {
             const response = await fetch("/form/" + id + "/fill", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ values: combinedValues, timestamp: new Date().toISOString().slice(0, 19).replace('T', ' ') })
+                body: JSON.stringify({ values: combinedValues})
             });
             const res = await response.json();
 
