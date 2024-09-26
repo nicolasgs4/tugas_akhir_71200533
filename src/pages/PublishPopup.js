@@ -4,31 +4,21 @@ import QRCode from 'react-qr-code';
 import { useParams } from 'react-router-dom';
 import "react-datepicker/dist/react-datepicker.css";
 import { useEffect, useRef, useState } from 'react';
-import ReactDatePicker, { registerLocale } from 'react-datepicker';
+import  { registerLocale } from 'react-datepicker';
 import Datepicker from "react-tailwindcss-datepicker";
 import { id } from 'date-fns/locale/id';
-import moment from 'moment/moment';
 import { formatISO, parseISO } from 'date-fns';
 
 registerLocale('id', id)
 
 export function PublishPopup({ closeModal }) {
-    const formatDateToIso = (date) => {
-        return formatISO(date, { representation: 'datetime' }).slice(0, 19).replace('T', ' ')
-    }
-
     const { id } = useParams();
-    const [endDate, setEndDate] = useState(formatDateToIso(new Date()));
     const [activeIndex, setActiveIndex] = useState(0);
-
-    
-    const handleDateChange = (date) => {
-        if (date) {
-            setEndDate(formatDateToIso(date));
-        } else {
-            console.error('Invalid date selected');
-        }
-    };
+    const [minRespondent, setMinRespondent] = useState(0);
+    const [value, setValue] = useState({
+        startDate: null,
+        endDate: null
+    });
 
     const handleGetPublish = async () => {
         try {
@@ -40,13 +30,25 @@ export function PublishPopup({ closeModal }) {
             });
             const res = await response.json();
             if (res) {
-                setEndDate(formatDateToIso(res[0].publish_end));
-                if (new Date(res[0].publish_end) - new Date() <= 0) {
-                    setActiveIndex(0);
-                }
-                else {
-                    setActiveIndex(1);
-                }
+                setValue(prev => ({
+                    ...prev,
+                    startDate: new Date(res.date_now),
+                    endDate: new Date(res.date_now)
+                }));             
+                if (res.publish_end != null) {
+                    setValue(prev => ({
+                        ...prev,
+                        endDate: new Date(res.publish_end)
+                    }));        
+                    if (new Date(res.publish_end) - new Date() <= 0) {
+                        setActiveIndex(0);
+                    }
+                    else {
+                        setActiveIndex(1);
+                    }
+                    return;
+                } 
+                setActiveIndex(0);
                 return;
             }
             throw new Error(res.message);
@@ -63,7 +65,7 @@ export function PublishPopup({ closeModal }) {
                     "Content-Type": "application/json",
                 }, 
                 body: JSON.stringify({
-                    end: endDate
+                    start: value.startDate, end: value.endDate, min_respondent: minRespondent
                 })
             });
             const res = await response.json();
@@ -86,13 +88,9 @@ export function PublishPopup({ closeModal }) {
     }, [])
 
     useEffect(() => {
-        
-    }, [endDate])
+        console.log(value)
+    }, [value])
     
-    const [value, setValue] = useState({
-        startDate: null,
-        endDate: null
-    });
 
     return (
         <div className={"w-[600px] h-[500px] fixed inset-0 m-auto flex flex-wrap items-center justify-center "}>
@@ -107,29 +105,49 @@ export function PublishPopup({ closeModal }) {
                 {
                     activeIndex === 0 &&
                     <>
-                        <ReactDatePicker
-                            locale='id'
-                            selected={new Date(endDate)}
-                            onChange={(date) => {
-                                handleDateChange(date)
-                            }}
-                            showTimeSelect
-                            timeFormat="HH:mm"
-                            timeIntervals={15}
-                            timeCaption="Time"
-                            dateFormat="YYYY-MM-dd HH:mm:ss"
-                            shouldCloseOnSelect={false}
-                        />
                         <Datepicker
                             primaryColor={"orange"}
-                        
+                            i18n={"id"}
+                            startWeekOn="mon"
+                            startFrom={value.startDate}
+                            minDate={value.startDate}
+                            separator='sampai'
                             value={value}
-                            onChange={newValue => setValue(newValue)}
+                            onChange={newValue => setValue(prev => ({
+                                ...prev,
+                                endDate: newValue.endDate
+                            }))}
                             placeholderText="Select date"
-                            showTimeSelect={false} 
                             dateFormat="YYYY-MM-dd HH:mm:ss" 
                             classNames=''
+                            
                         />
+
+                        <form className="max-w-[8rem] mx-auto">
+                            <label htmlFor="time" className="block mb-2 text-sm font-medium text-white *:dark:text-white">Select time:</label>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none">
+                                    <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                                        <path fillRule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z" clipRule="evenodd" />
+                                    </svg>
+                                </div>
+                                <input type="time" id="time" className="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" min="09:00" max="18:00" value={
+                                    String(new Date(value.endDate).getHours()).padStart(2, '0') + ":" +
+                                    String(new Date(value.endDate).getMinutes()).padStart(2, '0')
+                                } required 
+                                    onChange={e => {
+                                        const [hours, minutes] = e.target.value.split(":")
+                                        const date = new Date(value.endDate).setHours(hours, minutes, 0);
+                                        setValue(prev => ({
+                                            ...prev,
+                                            endDate: new Date(date)
+                                        }))
+                                    }}
+                                />
+                            </div>
+                        </form>
+
+                        <input type='number' onChange={e => setMinRespondent(e.target.value)}></input>
                         <button className='text-white' onClick={() => handlePostPublish()}>Publish</button>
                     </>
                 }   

@@ -599,13 +599,14 @@ app.get("/publish/:id", (req, res) => {
       return;
     }
     else {
-      connection.query('SELECT form_sid FROM form WHERE form_id = ?', [req.params.id], (err, results) => {
+      connection.query('SELECT NOW() as date_now, form_sid FROM form WHERE form_id = ?', [req.params.id], (err, results) => {
         if (err) {
           console.error('Error executing SQL query:', err);
           res.status(500).json({ error: 'Internal Server Error' });
           return;
         }
         else {
+          const dateNow = results[0].date_now;
           connection.query('SELECT publish_sid, publish_start, publish_end, min_respondent FROM publish WHERE form_sid = ? ORDER BY publish_sid DESC ', [results[0].form_sid], (err, results) => {
             if (err) {
               console.error('Error executing SQL query:', err);
@@ -614,7 +615,13 @@ app.get("/publish/:id", (req, res) => {
               return;
             }
             if (results.length > 0) {
-              res.json(results);
+              const newResult = Object.assign({date_now: dateNow}, results[0])
+              console.log(newResult)
+              res.json(newResult);
+              connection.release();
+            }
+            else {
+              res.json({ date_now: dateNow })
               connection.release();
             }
           })
@@ -625,7 +632,8 @@ app.get("/publish/:id", (req, res) => {
 })
 
 app.post("/publish/:id", (req, res) => {
-  const { end, min_respondent } = req.body;
+  const { start, end, min_respondent } = req.body;
+  console.log(req.body)
   pool.getConnection((err, connection) => {
     if (err) {
       console.error('Error executing SQL query:', err);
@@ -643,7 +651,15 @@ app.post("/publish/:id", (req, res) => {
         }
         else {
           console.log(results[0])
-          connection.query('INSERT INTO publish (form_sid, publish_start, publish_end, min_respondent) VALUES (?, NOW(), ?, ?)', [results[0].form_sid, end, min_respondent], (err, results) => {
+          connection.query(
+            `INSERT INTO publish (form_sid, publish_start, publish_end, min_respondent) 
+            VALUES (
+              ?, 
+              ?, 
+              ?,
+              ?
+            )`, 
+            [results[0].form_sid, format(parseISO(start), 'yyyy-MM-dd HH:mm:ss'), format(parseISO(end), 'yyyy-MM-dd HH:mm:ss'), min_respondent], (err, results) => {
             if (err) {
               console.error('Error executing SQL query:', err);
               res.status(500).json({ error: 'Internal Server Error' });
