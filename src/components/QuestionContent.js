@@ -4,7 +4,7 @@ import QuestionContainer from './QuestionContainer';
 import ResizableTextArea from './ResizableTextArea';
 
 function QuestionContent({formDetail, formJson, setFormJson, focusIndex, setFocusIndex, handleDetailChange, handleChange, handleFocus, isDisabled}) {
-    let sectionIndex = 1;
+    let sectionIndex = 0;
 
     const handleDelete = (event, index) => {
         if (focusIndex === index) setFocusIndex(null);
@@ -24,7 +24,7 @@ function QuestionContent({formDetail, formJson, setFormJson, focusIndex, setFocu
     return (
         <div className='h-full flex flex-col items-center gap-8 py-4 px-8'>
             <div className='w-full flex flex-wrap'>
-                <div className='h-16 bg-sky-400 text-neutral-50 p-2 rounded-xl'>Halaman 1</div>
+                <div className='h-16 bg-sky-400 text-neutral-50 p-2 rounded-xl'>Judul Kuesioner</div>
                 <div
                     id={'title'}
                     onClick={() => !isDisabled.edit ? handleFocus("title") : null}

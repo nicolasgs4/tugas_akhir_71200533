@@ -135,7 +135,7 @@ function QuestionContainer({
                 }
                 {
                     activeIndex === 2 &&
-                    <div>
+                    <div className='relative pr-5'>
                         <label>
                             <input type="radio" checked={question.value[0] === 0} onChange={e => handleChange('value', [0], index)} disabled={isDisabled.fill} />
                             <input type="text" value={question['answerElement'] === null ? "" : question['answerElement'][0]} onChange={e => (addToggleElement(e.target.value, 0))} disabled={isDisabled.edit} />
@@ -178,7 +178,7 @@ function QuestionContainer({
                                 <div className='flex flex-col gap-2'>
                                     {question['answerElement'] != null &&
                                         question['answerElement'].map((element, elementIndex) =>
-                                            <label key={'multi' + elementIndex} className='flex gap-4 items-center'>
+                                            <label key={'multi' + elementIndex} className='flex items-center'>
                                                 <input
                                                     type={question['setting'].isMultipleSelection ? "checkbox" : "radio"}
                                                     className='hidden'

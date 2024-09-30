@@ -269,8 +269,8 @@ app.post('/create', (req, res) => {
 
 app.post('/create/:id', (req, res) => {
   const { email } = req.body;
+  console.log(req.body)
   const form_id = req.params.id;
-  console.log(form_id)
   pool.getConnection((err, connection) => {
     if (err) {
       console.error('Error executing SQL query:', err);
@@ -279,22 +279,24 @@ app.post('/create/:id', (req, res) => {
       return;
     }
     connection.beginTransaction((err, results) => {
-      connection.query('SELECT form_question FROM form WHERE form_id = ?', [form_id], (err, results) => {
-        console.log(results)
+      connection.query('SELECT form_title, form_description, form_question FROM form WHERE form_id = ?', [form_id], (err, results) => {
         if (err) { connection.rollback(); }
         else {
-          connection.query('INSERT INTO form VALUES (DEFAULT, DEFAULT, DEFAULT, DEFAULT, ?)', [results[0].form_question]);
-        }
-        connection.query('SELECT LAST_INSERT_ID() AS form_sid', (err, results) => {
+          console.log(results)
+          const formQuestion = results[0].form_question != null ? results[0].form_question : "[]";
+          connection.query('INSERT INTO form VALUES (DEFAULT, DEFAULT, ?, ?, ?)', [results[0].form_title, results[0].form_description, formQuestion]);
+          connection.query('SELECT LAST_INSERT_ID() AS form_sid', (err, results) => {
           if (err) { connection.rollback(); }
           else {
-            console.log(results)
-            connection.query(
-              'INSERT INTO catalog (catalog_sid, form_sid, user_sid, date_of_creation) VALUES (DEFAULT, ?, (SELECT user_sid FROM user WHERE user_email = ?), DEFAULT)'
-              , [results[0].form_sid, email]
-            )
-          }
-        })
+            if (res) {
+              connection.query(
+                'INSERT INTO catalog (catalog_sid, form_sid, user_sid, date_of_creation) VALUES (DEFAULT, ?, (SELECT user_sid FROM user WHERE user_email = ?), DEFAULT)'
+                , [results[0].form_sid, email]
+              )
+            }
+          }})
+        }
+        
       })
       if (err) { connection.rollback(() => connection.release()); console.log(err); }
       else { connection.commit(); connection.release(); res.json(results); }

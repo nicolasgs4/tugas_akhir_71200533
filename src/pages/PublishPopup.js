@@ -94,7 +94,7 @@ export function PublishPopup({ closeModal }) {
 
     return (
         <div className={"w-[600px] h-[500px] fixed inset-0 m-auto flex flex-wrap items-center justify-center "}>
-            <div className="w-[600px] h-[500px] left-0 top-0 rounded-xl bg-stone-900 p-6 flex flex-col gap-5 relative">
+            <div className="w-[600px] h-[500px] left-0 top-0 rounded-xl bg-stone-900 p-6 flex flex-col bg-[#005595] gap-5 relative">
                 <button className='absolute right-4 top-4' onClick={closeModal}>
                     <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M16 2C8.2 2 2 8.2 2 16C2 23.8 8.2 30 16 30C23.8 30 30 23.8 30 16C30 8.2 23.8 2 16 2ZM16 28C9.4 28 4 22.6 4 16C4 9.4 9.4 4 16 4C22.6 4 28 9.4 28 16C28 22.6 22.6 28 16 28Z" fill="white" />
@@ -148,7 +148,7 @@ export function PublishPopup({ closeModal }) {
                         </form>
 
                         <input type='number' onChange={e => setMinRespondent(e.target.value)}></input>
-                        <button className='text-white' onClick={() => handlePostPublish()}>Publish</button>
+                        <button className='w-[100px] rounded-lg items-center justify-center text-white border-2 border-solid border-white' onClick={() => handlePostPublish()}>Publish</button>
                     </>
                 }   
                 {
@@ -171,7 +171,7 @@ export function PublishPopup({ closeModal }) {
                         </div>
                         <div className='w-full flex flex-wrap justify-center'>
                             <div className='bg-white p-2'>
-                                <QRCode className="" size={192} value={`http://192.168.1.4:3000/form/${id}`} />
+                                <QRCode className="" size={192} value={`http://192.168.0.119:3000/form/${id}`} />
                             </div>
                         </div>
                     </>

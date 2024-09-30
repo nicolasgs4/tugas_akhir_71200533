@@ -40,7 +40,7 @@ export function View({ email, username }) {
                     <button key={'catalog' + index} className="w-[216px] rounded-lg shadow flex-col justify-start items-start inline-flex"
                         onClick={e => navigate("/form/" + item.form_id + "/view")}>
                         <div className="w-[216px] h-[166px] rounded-t-lg bg-zinc-300" />
-                        <div className="h-[104px] px-3 py-2 rounded-b-lg bg-white flex-col justify-start items-start gap-2 flex">
+                        <div className="h-[104px] px-3 py-2 rounded-b-lg bg-white flex-col w-[200px] overflow-hidden whitespace-nowrap text-ellipsis justify-start items-start gap-2 flex">
                             <div className="self-stretch text-center text-zinc-900 text-lg font-semibold font-['Inter'] leading-normal">{item.form_title}</div>
                             <div className="w-full justify-start items-center gap-2 inline-flex">
                                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">

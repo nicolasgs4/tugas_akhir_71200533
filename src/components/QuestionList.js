@@ -24,7 +24,7 @@ function QuestionList({ formJson, setFormJson, focusIndex }) {
     
     useEffect(() => {
         setSections([{"id": "title", "name": "Halaman 1"}]);
-        let i = 1;
+        let i = 0;
         formJson.map((item, index) => {
             if (item.type === "section") {
                 i += 1;

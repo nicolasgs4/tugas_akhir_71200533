@@ -119,11 +119,11 @@ export default function ValueContainer({ id, index, question, publishArray }) {
     Chart.register(ArcElement, BarElement, Tooltip, CategoryScale, LinearScale, Title, PointElement, LineElement, TimeScale, Filler);
 
     return (
-        <div className='w-full h-full '>
+        <div className='w-full h-wrap'>
             {
                 activeIndex == 0 ?
                     <div className='flex flex-wrap translate-y-6'>
-                        <div className='h-16 bg-sky-400 text-neutral-50 p-2 rounded-xl'>Halaman 1</div>
+                        <div className='h-16 bg-sky-400 text-neutral-50 p-2 rounded-xl'>Judul Kuesioner</div>
                     </div>
                     : null
             }
