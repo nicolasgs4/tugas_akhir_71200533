@@ -152,10 +152,12 @@ const ChartCard = ({valueData}) => {
                 <Select
                     options={titleOptions.current}
                     onChange={e => {
+                        console.log(valueData[e.value].question_type)
                         setForm(prev => ({ ...prev, form_id: e.value, value_id: null }));
                         questionOptions.current = Object.entries(valueData[e.value].question_type)
-                            .filter(([key, value]) => value !== "text")
-                            .map(([key, value]) => ({
+                            .filter(([key, value]) => value !== "section" && value !== "text")
+                            .map(([key, value]) => (
+                            {
                                 value: key,
                                 label: "Pertanyaan ke-" + (parseInt(key) + 1)
                             }));

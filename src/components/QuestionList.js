@@ -102,9 +102,13 @@ function QuestionList({ formJson, setFormJson, focusIndex }) {
                         {formJson.length > 0 ? 
                             formJson.map((question, index) => (
                             <ScrollIntoView selector={'#question'+index} key={'list'+index} className='cursor-pointer'>
-                                <li tabIndex="0" className={`w-full break all`}>
-                                    {question.name}
-                                </li>
+                                {
+                                    question.type !== "section" &&
+                                    <li tabIndex="0" className={`w-full break all`}>
+                                        {question.name}
+                                    </li>
+                                }
+                                
                             </ScrollIntoView>
                             )) : null
                         }

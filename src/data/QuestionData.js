@@ -24,6 +24,8 @@ const questionSettingTemplate = {
         },
     4: {},
     5:  {
+            minInfo: "",
+            maxInfo: "",
             scaleSize: 0
         }
 }

@@ -174,7 +174,7 @@ export function Create({ email, username }) {
                                         <div className="left-[19px] top-[77px] absolute text-stone-900 text-2xl font-normal font-['Segoe UI']">Apakah Anda yakin ingin menghapus pertanyaan ini?</div>
                                         <div className="w-[120px] h-[60px] left-[375px] top-[174px] absolute">
                                             <div className="w-[120px] h-[60px] left-0 top-0 absolute bg-neutral-800 rounded-[10px]" />
-                                            <button onClick={() => { formId.current = item.form_id; handleDelete();}}>
+                                            <button onClick={() => { formId.current = item.form_id; handleDelete(item.form_id);}}>
                                                 <div className="left-[11px] top-[16px] absolute text-center text-white text-2xl font-normal font-['Cabin']">Ya, Hapus</div>
                                             </button>
                                         </div>

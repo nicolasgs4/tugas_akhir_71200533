@@ -97,12 +97,13 @@ app.get('/dashboard', (req, res) => {
           return;
         }
         if (results.length > 0) {
+          console.log(results)
           const newResults = {};
           results.forEach(element => {
             const questionTypes = {};
             if (element.form_question) {
               JSON.parse(element.form_question).forEach((question, index) => {
-                questionTypes[index] = question.id;
+                questionTypes[index] = question.type;
               });
             }
             newResults[element.form_id] = {
