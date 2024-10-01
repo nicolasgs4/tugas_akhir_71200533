@@ -233,9 +233,10 @@ function QuestionContainer({
                     <div className='relative'>
                         {
                             scaleElement()
+                            
                         }
-                            <input type='text' value={question['setting']['minInfo']} onChange={e => handleChange("setting.minInfo", e.target.value, index)}></input>
-                            <input type='text' value={question['setting']['maxInfo']} onChange={e => handleChange("setting.maxInfo", e.target.value, index)}></input>
+                            <input type='text' disabled={isDisabled.edit} value={question['setting']['minInfo']} onChange={e => handleChange("setting.minInfo", e.target.value, index)}></input>
+                            <input type='text' disabled={isDisabled.edit} value={question['setting']['maxInfo']} onChange={e => handleChange("setting.maxInfo", e.target.value, index)}></input>
                     </div>
                 }
             </div>

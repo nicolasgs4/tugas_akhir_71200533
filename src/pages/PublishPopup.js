@@ -22,7 +22,7 @@ export function PublishPopup({ closeModal }) {
 
     const handleGetPublish = async () => {
         try {
-            const response = await fetch("/publish/" + id, {
+            const response = await fetch("/publishes/" + id, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",

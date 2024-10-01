@@ -593,7 +593,7 @@ app.post("/form/:id/fill", (req, res) => {
   })
 })
 
-app.get("/publish/:id", (req, res) => {
+app.get("/publishes/:id", (req, res) => {
   pool.getConnection((err, connection) => {
     if (err) {
       console.error('Error executing SQL query:', err);
@@ -608,6 +608,7 @@ app.get("/publish/:id", (req, res) => {
           res.status(500).json({ error: 'Internal Server Error' });
           return;
         }
+
         else {
           const dateNow = results[0].date_now;
           connection.query('SELECT publish_sid, publish_start, publish_end, min_respondent FROM publish WHERE form_sid = ? ORDER BY publish_sid DESC ', [results[0].form_sid], (err, results) => {
@@ -618,13 +619,47 @@ app.get("/publish/:id", (req, res) => {
               return;
             }
             if (results.length > 0) {
-              const newResult = Object.assign({date_now: dateNow}, results[0])
-              console.log(newResult)
+              const newResult = Object.assign({ date_now: dateNow }, results[0])
               res.json(newResult);
               connection.release();
             }
             else {
               res.json({ date_now: dateNow })
+              connection.release();
+            }
+          })
+        }
+      })
+    }
+  })
+})
+
+app.get("/publish/:id", (req, res) => {
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error('Error executing SQL query:', err);
+      res.status(500).json({ error: 'Internal Server Error' });
+      connection.release();
+      return;
+    }
+    else {
+      connection.query('SELECT form_sid FROM form WHERE form_id = ?', [req.params.id], (err, results) => {
+        if (err) {
+          console.error('Error executing SQL query:', err);
+          res.status(500).json({ error: 'Internal Server Error' });
+          return;
+        }
+
+        else {
+          connection.query('SELECT publish_sid, publish_start, publish_end, min_respondent FROM publish WHERE form_sid = ? ORDER BY publish_sid DESC ', [results[0].form_sid], (err, results) => {
+            if (err) {
+              console.error('Error executing SQL query:', err);
+              res.status(500).json({ error: 'Internal Server Error' });
+              connection.release();
+              return;
+            }
+            if (results.length > 0) {
+              res.json(results);
               connection.release();
             }
           })
