@@ -7,10 +7,12 @@ import QuestionList from '../components/QuestionList';
 import { useNavigate, useParams } from 'react-router-dom';
 import myData from './../output.json';
 import { useCookies } from 'react-cookie';
+import End from './End';
 
 export function Form() {
     const { id } = useParams();
     const cookie = useCookies(['skripsi-form']);
+    const navigate = useNavigate();
 
     const [formDetail, setFormDetail] = useState([])
     const [formJson, setFormJson] = useState([])
@@ -160,7 +162,8 @@ export function Form() {
             throw new Error(res.message);
         } catch (err) {
             console.error(err);
-        }
+        } 
+
     };
 
     useEffect(() => {
@@ -260,7 +263,7 @@ export function Form() {
                         {
                             isDisabled.edit && !isDisabled.fill ?
                             <div className='flex flex-wrap'>
-                                <div className='ml-8 bg-sky-400 text-neutral-50 p-2 rounded-xl' onClick={() => handlePostValues()}>SUBMIT</div>
+                                <div className='ml-8 bg-sky-400 text-neutral-50 p-2 rounded-xl' onClick={() => {handlePostValues(); navigate("/End")}}>SUBMIT</div>
                             </div>
                             : null
                         }
