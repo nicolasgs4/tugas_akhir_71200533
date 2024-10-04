@@ -63,7 +63,7 @@ export function Main({content}) {
             <div className='w-full'>
                 {
                     userData ?
-                    <div className='h-[12%]'>
+                    <div className='h-[100px]'>
                         <Headbar
                             email={userData.email} username={userData.username}
                         /> 
