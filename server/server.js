@@ -97,13 +97,12 @@ app.get('/dashboard', (req, res) => {
           return;
         }
         if (results.length > 0) {
-          console.log(results)
           const newResults = {};
           results.forEach(element => {
             const questionTypes = {};
             if (element.form_question) {
               JSON.parse(element.form_question).forEach((question, index) => {
-                questionTypes[index] = question.type;
+                questionTypes[index] = {name : question.name, type: question.type};
               });
             }
             newResults[element.form_id] = {
@@ -256,14 +255,24 @@ app.post('/create', (req, res) => {
       connection.query('SELECT LAST_INSERT_ID() AS form_sid', (err, results) => {
         if (err) { connection.rollback(); }
         else {
+          const formSid = results[0].form_sid;
           connection.query(
             'INSERT INTO catalog (catalog_sid, form_sid, user_sid, date_of_creation) VALUES (DEFAULT, ?, (SELECT user_sid FROM user WHERE user_email = ?), DEFAULT)'
-            , [results[0].form_sid, email]
+            , [formSid, email], (err) => {
+              if (err) {connection.rollback();}
+              else {
+                connection.query('SELECT form_id FROM form WHERE form_sid = ?', [formSid], (err, results) => {
+                  if (err) { connection.rollback(); }
+                  else {
+                    res.json(results); connection.commit(); connection.release(); 
+                  }
+                })
+              }
+            }
           )
         }
       })
       if (err) { connection.rollback(() => connection.release()); console.log(err); }
-      else { connection.commit(); connection.release(); res.json(results); }
     })
   })
 });
@@ -414,7 +423,7 @@ app.get("/value/:id", (req, res) => {
                     } 
                     else {
                       if (element.value.length > 0) {
-                        element.value.forEach(i => {
+                        Array.from(element.value).forEach(i => {
                           const questionElement = answerElement[i];
                           newValue[questionElement] = (newValue[questionElement] || 0) + 1;
                         });
@@ -481,7 +490,7 @@ app.get("/value/:id", (req, res) => {
                       } 
                       else {
                         if (element.value.length > 0) {
-                          element.value.forEach(i => {
+                          Array.from(element.value).forEach(i => {
                             const questionElement = answerElement[i];
                             newValue[questionElement] = (newValue[questionElement] || 0) + 1;
                           });

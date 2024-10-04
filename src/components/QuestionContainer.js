@@ -111,7 +111,7 @@ function QuestionContainer({
                 {
                     !isDisabled.edit ?
                         <button className="absolute right-0 mr-3" onClick={(event) => handleDelete(event, index)}>
-                            <svg width="15" height="18" viewBox="0 0 15 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M1.89432 16C1.89432 17.1 2.79676 18 3.89975 18H11.9215C13.0245 18 13.9269 17.1 13.9269 16V4H1.89432V16ZM14.9296 1H11.4201L10.4174 0H5.40383L4.40111 1H0.891602V3H14.9296V1Z" fill="black" />
                             </svg>
                         </button>
@@ -123,7 +123,7 @@ function QuestionContainer({
                         <ResizableTextArea
                             className='md:w-3/4 sm:w-full min-h-6 bg-neutral-50 rounded-xl border border-black overflow-auto p-4 text-2xl flex-wrap '
                             onChange={e => handleChange('value', e.target.value, index)}
-                            placeholder={'Tuliskan sesuatu di sini!'}
+                            placeholder={'Silahkan Jawab di sini'}
                             question={question}
                             index={index}
                             value={question.value || ''}
@@ -231,12 +231,13 @@ function QuestionContainer({
                 {
                     activeIndex === 5 &&
                     <div className='relative'>
+                    <input placeholder="Masukkan Nilai Skala" type='text' disabled={isDisabled.edit} value={question['setting']['minInfo']} onChange={e => handleChange("setting.minInfo", e.target.value, index)}></input>
                         {
                             scaleElement()
                             
                         }
-                            <input type='text' disabled={isDisabled.edit} value={question['setting']['minInfo']} onChange={e => handleChange("setting.minInfo", e.target.value, index)}></input>
-                            <input type='text' disabled={isDisabled.edit} value={question['setting']['maxInfo']} onChange={e => handleChange("setting.maxInfo", e.target.value, index)}></input>
+                            
+                            <input placeholder="Masukkan Nilai Skala" type='text' disabled={isDisabled.edit} value={question['setting']['maxInfo']} onChange={e => handleChange("setting.maxInfo", e.target.value, index)}></input>
                     </div>
                 }
             </div>

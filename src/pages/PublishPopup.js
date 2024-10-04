@@ -93,8 +93,8 @@ export function PublishPopup({ closeModal }) {
     
 
     return (
-        <div className={"w-[600px] h-[500px] fixed inset-0 m-auto flex flex-wrap items-center justify-center "}>
-            <div className="w-[600px] h-[500px] left-0 top-0 rounded-xl bg-stone-900 p-6 flex flex-col bg-[#005595] gap-5 relative">
+        <div className={"w-[600px] h-wrap fixed inset-0 m-auto flex flex-wrap items-center justify-center "}>
+            <div className="w-[600px] h-wrap left-0 top-0 rounded-xl bg-stone-900 p-6 flex flex-col bg-[#005595] gap-5 relative">
                 <button className='absolute right-4 top-4' onClick={closeModal}>
                     <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M16 2C8.2 2 2 8.2 2 16C2 23.8 8.2 30 16 30C23.8 30 30 23.8 30 16C30 8.2 23.8 2 16 2ZM16 28C9.4 28 4 22.6 4 16C4 9.4 9.4 4 16 4C22.6 4 28 9.4 28 16C28 22.6 22.6 28 16 28Z" fill="white" />
@@ -105,7 +105,12 @@ export function PublishPopup({ closeModal }) {
                 {
                     activeIndex === 0 &&
                     <>
-                        <Datepicker
+                    <form className="w-full h-full mx-auto">
+                            <label htmlFor="time" className="block mb-2 text-sm w-[150px] font-medium text-white *:dark:text-white">Batas Waktu Pengisian : </label>
+                                  
+                            
+                            <div className="relative flex w-wrap gap-2">
+                      <Datepicker
                             primaryColor={"orange"}
                             i18n={"id"}
                             startWeekOn="mon"
@@ -120,18 +125,13 @@ export function PublishPopup({ closeModal }) {
                             placeholderText="Select date"
                             dateFormat="YYYY-MM-dd HH:mm:ss" 
                             classNames=''
-                            
                         />
-
-                        <form className="max-w-[8rem] mx-auto">
-                            <label htmlFor="time" className="block mb-2 text-sm font-medium text-white *:dark:text-white">Select time:</label>
-                            <div className="relative">
                                 <div className="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none">
                                     <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
                                         <path fillRule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z" clipRule="evenodd" />
                                     </svg>
                                 </div>
-                                <input type="time" id="time" className="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" min="09:00" max="18:00" value={
+                                <input type="time" id="time" className="w-[300px] bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" min="09:00" max="18:00" value={
                                     String(new Date(value.endDate).getHours()).padStart(2, '0') + ":" +
                                     String(new Date(value.endDate).getMinutes()).padStart(2, '0')
                                 } required 
@@ -146,9 +146,16 @@ export function PublishPopup({ closeModal }) {
                                 />
                             </div>
                         </form>
+                        
 
-                        <input type='number' onChange={e => setMinRespondent(e.target.value)}></input>
+                        
+                        <div>
+                        <label className="mb-2 text-sm w-[200px] font-medium text-white *:dark:text-white">Minimal Responden :  </label>
+                        <input type='number' placeholder="Masukkan Jumlah Responden" onChange={e => setMinRespondent(e.target.value)}></input>
+                      </div>
+                      <div className="flex justify-center items-center h-full">
                         <button className='w-[100px] rounded-lg items-center justify-center text-white border-2 border-solid border-white' onClick={() => handlePostPublish()}>Publish</button>
+                        </div>
                     </>
                 }   
                 {

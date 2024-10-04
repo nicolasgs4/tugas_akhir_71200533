@@ -75,10 +75,8 @@ function QuestionInspector({ formJson, focusIndex, handleChange, setIsDisabled }
                             <div className="text-zinc-900 text-xl font-normal font-['Segoe UI']">Pengaturan</div>
 
                             <ButtonSwitch keyJson='isRequired' formJson={formJson} focusIndex={focusIndex} handleChange={handleChange}>Required</ButtonSwitch>
+                            <div className="">Jumlah Skala : </div>
                             <QuestionInspectorSetting index={getQuestionTypeValue(formJson[focusIndex].type)} formJson={formJson} focusIndex={focusIndex} handleChange={handleChange} />
-                            <div>
-
-                            </div>
                         </> 
                         :
                         <div className='align-middle'>Pertanyaan tidak ada yang dipilih</div>

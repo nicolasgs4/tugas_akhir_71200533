@@ -49,12 +49,13 @@ export function Create({ email, username }) {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({email : email, formId : formId.current})
+                body: JSON.stringify({email : email})
             });
             const res = await response.json();
 
             if (res) {
-                handleGetAllForms();
+                navigate("/form/" + res[0].form_id + "/edit")
+                //handleGetAllForms();
                 return;
             }
             throw new Error(res.message);
@@ -76,7 +77,6 @@ export function Create({ email, username }) {
             if (res) {
                 closeModal();
                 handleGetAllForms();
-                formId.current = null;
                 return;
             }
             throw new Error(res.message);

@@ -2,11 +2,13 @@ import './../App.css';
 import ScrollIntoView from 'react-scroll-into-view'
 import { getQuestionJsonTemplate } from '../data/QuestionData';
 import { useEffect, useState } from 'react';
+import { useNavigate } from "react-router-dom"
 
 function QuestionList({ formJson, setFormJson, focusIndex }) {
     const [sections, setSections] = useState([]);
     const [sectionIndex, setSectionIndex] = useState(0); 
 
+    const navigate = useNavigate()
     const handleAddSection = () => {
         setFormJson(prev => [...prev, getQuestionJsonTemplate(0)])
     }
@@ -50,22 +52,20 @@ function QuestionList({ formJson, setFormJson, focusIndex }) {
     return (
         <div className='h-full fixed w-1/4 justify-start items-start inline-flex shadow-sky-400 '>
             <div className='h-full w-full pt-[30px] pb-[60px] bg-neutral-50 border border-sky-400 flex-col justify-start items-center gap-[30px] inline-flex'>
+                <button onClick={() => navigate('/dashboard')}>
                 <img className="w-[79px] h-[50px]" src="/images/fti.png"/>
+                </button>
                 <div className="justify-start items-center gap-1 flex">
                     <button onClick={() => { 
                             setSectionIndex(prev => prev - 1);
                         }}>
-                        <svg width="10" height="17" viewBox="0 0 10 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M9 16.5L1 8.5L9 0.5" stroke="#667085" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
+                        
                     </button>
-                    <div className="text-black text-base font-normal">{sections[sectionIndex] ? sections[sectionIndex].name : null}</div>
+                    
                     <button onClick={() => {
                             setSectionIndex(prev => prev + 1);
                         }}>
-                        <svg width="10" height="17" viewBox="0 0 10 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M1 0.5L9 8.5L1 16.5" stroke="#667085" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
+                        
                     </button>
                 </div>
                 <div className="justify-start items-center flex">
@@ -77,8 +77,9 @@ function QuestionList({ formJson, setFormJson, focusIndex }) {
                         <div onClick={handleAddSection} className="text-black text-base font-normal  underline">Tambah Halaman</div>
                     </button>
                 </div>
-                <div className="text-black text-base font-normal">Daftar Pertanyaan</div>
+                
                 <div className="w-[250px] h-px bg-sky-400" />
+                <div className="text-black text-base font-normal">Daftar Pertanyaan</div>
                 <button className="flex gap-4" onClick={handleAddQuestion}>
                     <div className="w-6 h-6 relative">
                         <div className="w-[18px] h-[18px] left-[3px] top-[3px] absolute">

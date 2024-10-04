@@ -7,11 +7,12 @@ const Sidebar = ({content}) => {
     return (
         <div className="w-1/4 h-screen pt-[60px] pb-5 bg-neutral-50 border border-blue-400 justify-start items-start gap-2.5 flex min-w-max">
             <div className="w-[312px] h-full flex-col justify-start items-center gap-2.5 inline-flex">
-                <img className="w-[79px] h-[50px]" src="/images/fti.png" />
-                <div className="w-[250px] h-20 justify-start items-end gap-3.5 inline-flex">
-                    <div className="text-center text-zinc-900 text-base font-normal font-['Inter'] leading-normal">Kuesioner</div>
+                {/* <img className="w-[79px] h-[50px]" src="/images/fti.png" /> */}
+                        {/* Wrap the img in a button for navigation */}
+        <button onClick={() => navigate('/dashboard')}>
+          <img className="w-[79px] h-[50px]" src="/images/fti.png" alt="FTI logo" />
+        </button>
                     <div className="w-[50px] h-[30px] bg-neutral-50" />
-                </div>
                 <div className="w-[250px] h-px bg-blue-400" />
 
                 <div className="flex-col justify-start items-start gap-5 flex">
@@ -44,7 +45,7 @@ const Sidebar = ({content}) => {
                         <div className="text-zinc-900 text-base font-normal font-['Inter'] leading-normal">Buat</div>
                     </button>
 
-                    <button className={`w-[280px] h-14 pl-10 justify-start items-center gap-3 inline-flex hover:bg-sky-400 rounded-[15px] ${content == 2 ? 'bg-sky-400' : null} rounded-[15px]`} 
+                    {/* <button className={`w-[280px] h-14 pl-10 justify-start items-center gap-3 inline-flex hover:bg-sky-400 rounded-[15px] ${content == 2 ? 'bg-sky-400' : null} rounded-[15px]`} 
                         onClick={() => navigate("/view")}>
                         <div className="w-8 h-8 relative">
                             <div className="w-[26.67px] h-[25.33px] absolute">
@@ -56,7 +57,7 @@ const Sidebar = ({content}) => {
                             </div>
                         </div>
                         <div className="text-zinc-900 text-base font-normal font-['Inter'] leading-normal ">Lihat</div>
-                    </button>
+                    </button> */}
 
                     <button 
                         className={`w-[280px] h-14 pl-10 justify-start items-center gap-3 inline-flex hover:bg-sky-400 rounded-[15px] ${content == 3 ? 'bg-sky-400' : null} rounded-[15px]`}
@@ -70,7 +71,7 @@ const Sidebar = ({content}) => {
                                 </svg>
                             </div>
                         </div>
-                        <div className="text-zinc-900 text-base font-normal font-['Inter'] leading-normal">Analisis</div>
+                        <div className="text-zinc-900 text-base font-normal font-['Inter'] leading-normal">Hasil</div>
                     </button>
                 </div>
             </div>

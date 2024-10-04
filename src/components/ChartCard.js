@@ -146,26 +146,26 @@ const ChartCard = ({valueData}) => {
     return (
         <div className="h-full p-2.5 bg-neutral-50 rounded-[15px] border border-neutral-500 flex-col items-center gap-2.5 flex">
             <div className="flex-col justify-start items-start gap-2 flex">
-                <div className="text-center text-zinc-900 text-base font-normal font-['Inter'] leading-normal">Custom Chart</div>
+                <div className="text-center text-zinc-900 text-base font-normal font-['Inter'] text-xl leading-normal">Chart Pilihan Pertanyaan</div>
             </div>
             <div className='w-full'>
-                <Select
+                <Select placeholder="Pilih Kuesioner yang ingin dilihat"
                     options={titleOptions.current}
                     onChange={e => {
-                        console.log(valueData[e.value].question_type)
+                        console.log(valueData[e.value].question_type[0].name)
                         setForm(prev => ({ ...prev, form_id: e.value, value_id: null }));
                         questionOptions.current = Object.entries(valueData[e.value].question_type)
-                            .filter(([key, value]) => value !== "section" && value !== "text")
+                            .filter(([key, value]) => value.type !== "section" && value.type !== "text")
                             .map(([key, value]) => (
                             {
                                 value: key,
-                                label: "Pertanyaan ke-" + (parseInt(key) + 1)
+                                label: value.name
                             }));
                     }}
                 />
             </div>
             <div className='w-full'>
-                <Select ref={questionSelect} options={questionOptions.current}  onChange={e => {
+                <Select ref={questionSelect} options={questionOptions.current} placeholder="Pilih pertanyaan yang ingin dilihat" onChange={e => {
                     setForm(prev => ({ ...prev, value_id: e.value, question_type: valueData[form.form_id].question_type[e.value] }));
                 }} />
             </div>
