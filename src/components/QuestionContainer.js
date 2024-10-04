@@ -45,15 +45,16 @@ function QuestionContainer({
         for (var i = 0; i < question['setting']['scaleSize'] * 2 + 3; i++) {
             const j = i;
             scaleElementItem = [...scaleElementItem,
-            <button key={"circle" + i} checked={question['value'] == i} onClick={() => handleChange('value', j, index)} disabled={isDisabled.fill}>
+            <button key={"circle" + i} checked={question['value'] == i} onClick={() => handleChange('value', j, index)} disabled={isDisabled.fill} style={{ margin: '5px' }}>
+            
                 {
                     question['value'] >= i && typeof (question['value']) == "number" ?
                         <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <circle cx="25" cy="25" r="23.5" stroke="black" strokeWidth="3" />
-                            <circle cx="25" cy="25" r="18.5" fill="black" />
+                            <circle cx="25" cy="25" r="18.5" fill="black" style={{ margin: '10px' }}/>
                         </svg>
                         :
-                        <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <svg width="25" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <circle cx="25" cy="25" r="23.5" stroke="black" strokeWidth="3" />
                         </svg>
                 }
@@ -136,13 +137,13 @@ function QuestionContainer({
                 {
                     activeIndex === 2 &&
                     <div className='relative pr-5'>
-                        <label>
+                        <label style={{ marginRight: '20px' }}>
                             <input type="radio" checked={question.value[0] === 0} onChange={e => handleChange('value', [0], index)} disabled={isDisabled.fill} />
-                            <input type="text" value={question['answerElement'] === null ? "" : question['answerElement'][0]} onChange={e => (addToggleElement(e.target.value, 0))} disabled={isDisabled.edit} />
+                            <input type="text" value={question['answerElement'] === null ? "" : question['answerElement'][0]} onChange={e => (addToggleElement(e.target.value, 0))} placeholder="Masukan pilihan pertama" disabled={isDisabled.edit} />
                         </label>
                         <label>
                             <input type="radio" checked={question.value[0] === 1} onChange={e => handleChange('value', [1], index)} disabled={isDisabled.fill} />
-                            <input type="text" value={question['answerElement'] === null ? "" : question['answerElement'][1]} onChange={e => (addToggleElement(e.target.value, 1))} disabled={isDisabled.edit} />
+                            <input type="text" value={question['answerElement'] === null ? "" : question['answerElement'][1]} onChange={e => (addToggleElement(e.target.value, 1))} placeholder="Masukan pilihan kedua" disabled={isDisabled.edit} />
                         </label>
                     </div>
                 }
@@ -231,13 +232,16 @@ function QuestionContainer({
                 {
                     activeIndex === 5 &&
                     <div className='relative'>
-                    <input placeholder="Masukkan Nilai Skala" type='text' disabled={isDisabled.edit} value={question['setting']['minInfo']} onChange={e => handleChange("setting.minInfo", e.target.value, index)}></input>
+                    
+                    
                         {
                             scaleElement()
                             
                         }
-                            
-                            <input placeholder="Masukkan Nilai Skala" type='text' disabled={isDisabled.edit} value={question['setting']['maxInfo']} onChange={e => handleChange("setting.maxInfo", e.target.value, index)}></input>
+                        <div className="flex justify-between mb-4">
+                            <input placeholder="Masukkan Nilai Skala" type='text' disabled={isDisabled.edit} value={question['setting']['minInfo']} onChange={e => handleChange("setting.minInfo", e.target.value, index)}className="flex-1 mr-2"></input>
+                            <input placeholder="Masukkan Nilai Skala" type='text' disabled={isDisabled.edit} value={question['setting']['maxInfo']} onChange={e => handleChange("setting.maxInfo", e.target.value, index)}className="flex-1 ml-2"></input>
+                    </div>
                     </div>
                 }
             </div>
