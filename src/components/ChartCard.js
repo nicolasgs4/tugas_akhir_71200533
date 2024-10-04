@@ -7,6 +7,7 @@ import Select from 'react-select'
 import randomColor from 'randomcolor';
 import { ChromePicker } from 'react-color';
 import { useCookies } from 'react-cookie';
+import { da } from 'date-fns/locale';
 
 const ChartCard = ({valueData}) => {
     const [form, setForm] = useState({form_id: null, value_id: null, question_type: null})
@@ -135,6 +136,7 @@ const ChartCard = ({valueData}) => {
     useEffect(() => {
         if (!hasRendered.current) { hasRendered.current = true; return; }
         if (data != null) chartRef.current.getDatasetMeta(0).data[0].hidden = false;
+        if (data != undefined) console.log(data)
     }, [data])
 
     Chart.register(ArcElement, Tooltip);
@@ -169,7 +171,7 @@ const ChartCard = ({valueData}) => {
                     setForm(prev => ({ ...prev, value_id: e.value, question_type: valueData[form.form_id].question_type[e.value] }));
                 }} />
             </div>
-            <div className='w-full flex relative justify-center'>
+            <div className='w-full flex relative justify-start'>
                 <div className='w-[250px]'>
                     {
                         data != null
@@ -186,6 +188,31 @@ const ChartCard = ({valueData}) => {
                             } />
                     }
                 </div>
+                {
+                    (data != null || data != undefined)
+                        &&
+                    <div className="h-[194px] p-2.5 bg-white rounded-[15px] shadow flex-col justify-start items-start gap-2 inline-flex">
+                        <ul className='flex flex-col'>
+                            {data.labels && data.labels.length > 0 &&
+                                data.labels.map((element, index) => (
+                                    <li key={index} className="justify-start items-center inline-flex gap-4">
+                                        <button onClick={e => {
+                                            clickPos.current = { x: e.pageX + 'px', y: e.pageY + 'px' };
+                                            elementIndex.current = index;
+                                            handleClick(data.datasets[0].backgroundColor[index]);
+                                        }
+                                        } className="w-5 h-5 rounded-[50px]" style={{ backgroundColor: data.datasets[0].backgroundColor[index] }} />
+                                        <div className="text-[#1a1a1a] text-base font-normal font-['Inter'] leading-normal">
+                                            {element}
+                                        </div>
+                                        
+                                    </li>
+                                ))
+                            }
+                        </ul>
+                    </div>
+                }
+                
                 {data != null &&
                     <button className='absolute right-0' onClick={handleCopyChart}>
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#0075b6"><path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z" /></svg>

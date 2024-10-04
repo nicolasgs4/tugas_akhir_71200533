@@ -154,7 +154,7 @@ function QuestionContainer({
                             onEdit ?
                                 <div>
                                     <ResizableTextArea
-                                        className='w-full bg-zinc-300 rounded-[10px] border border-black overflow-auto p-4 text-2xl flex-wrap'
+                                        className='w-full rounded-[10px] border border-black overflow-auto p-4 text-2xl flex-wrap'
                                         defaultValue={
                                             question['answerElement'] != null ?
                                                 question['answerElement'].join('\n')
