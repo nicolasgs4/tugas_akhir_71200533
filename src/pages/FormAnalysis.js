@@ -15,7 +15,7 @@ export function FormAnalysis() {
 
     const [publishValues, setPublishValues] = useState();
     const [publishOptions, setPublishOptions] = useState([]);
-    const [publishIndex, setPublishIndex] = useState({ a: 0, b: 0 });
+    const [publishIndex, setPublishIndex] = useState([]);
 
     const [publishArray, setPublishArray] = useState();
 
@@ -27,6 +27,21 @@ export function FormAnalysis() {
         return formatISO(date, { representation: 'datetime' }).slice(0, 19).replace('T', ' ')
     }
 
+    const defaultbackgroundColor = [
+        '#FF4853',
+        '#3BC0ED',
+        '#03F1A3',
+        '#FDEA5F',
+        '#FF3136',
+        '#0075B6',
+        '#11D983',
+        '#F4A631',
+        '#FF4853',
+        '#0098DC',
+        '#00E376',
+        '#FEC60C'
+    ]
+    
     const handleGetPublish = async () => {
         if (publishArray != null) return;
         try {
@@ -91,11 +106,17 @@ export function FormAnalysis() {
         if (!hasRendered.current) { hasRendered.current = true; return; }
         handleGetForm();
         handleGetPublish();
-        if (publishArray != null) setPublishArray([publishValues[publishIndex.a], publishValues[publishIndex.b]]);
     }, [])
 
     useEffect(() => {
-        if (publishValues != null) setPublishArray([publishValues[publishIndex.a], publishValues[publishIndex.b]]);
+        if (publishValues != null) {
+            const newPublishArray = []
+            publishIndex.map((element) => {
+                newPublishArray.push(publishValues[element]);
+            })
+            setPublishArray(newPublishArray);
+        }
+        console.log(publishIndex)
     }, [publishIndex])
 
     return (
@@ -130,20 +151,60 @@ export function FormAnalysis() {
                         </div>
                     </div>
                     <div className='w-full relative flex'>
-                        <div className='relative left-0'>
-                            <Select
-                                options={
-                                    publishOptions
-                                }
-                                value={publishOptions[publishIndex.a]}
-                                onChange={e => {
-                                    setPublishIndex(prev => ({ ...prev, a: publishOptions.indexOf(e) }))
-                                }}
-                                isSearchable={false}
-                                className='w-60 bg-neutral-50 rounded-lg shadow border border-sky-400 justify-stretch items-center'
-                            />
-                        </div>
-                        <div className='absolute right-0'>
+                        <Select
+                            options={
+                                publishOptions
+                            }
+                            value={publishOptions[publishIndex.a]}
+                            onChange={e => {
+                                const newPublishIndex = [];
+                                e.map((element) => {
+                                    newPublishIndex.push(publishOptions.indexOf(element))
+                                })  
+                                setPublishIndex(newPublishIndex)
+                            }}
+                            
+                            placeholder={"Silahkan pilih tanggal publish"}
+                            isMulti
+                            isOptionDisabled={() => publishIndex.length > 5}
+                            isSearchable={false}
+                            className='w-full bg-neutral-50 rounded-lg shadow border border-sky-400 justify-stretch items-center'
+                            styles={{
+                                control: (provided) => ({
+                                    ...provided,
+                                    borderColor: 'skyblue',
+                                }),
+                                option: (provided, state) => ({
+                                    ...provided,
+                                    backgroundColor: state.isSelected ? '#60A5FA' : state.isFocused ? '#60A5FA' : null,
+                                    color: state.isSelected ? 'white' : 'black',
+                                    '&:hover': {
+                                        backgroundColor: '#60A5FA',
+                                    }
+                                }),
+                                multiValue: (provided, { data, index }) => {
+                                    const colors = defaultbackgroundColor.slice(0, publishIndex.length); 
+                                    const color = colors[index % colors.length]; 
+                                    return {
+                                        ...provided,
+                                        backgroundColor: color,
+                                    };
+                                },
+                                multiValueLabel: (provided) => ({
+                                    ...provided,
+                                    color: 'white',
+                                }),
+                                multiValueRemove: (provided) => ({
+                                    ...provided,
+                                    color: 'white',
+                                    ':hover': {
+                                        backgroundColor: '#424A54',
+                                        color: 'white',
+                                    }
+                                })
+                            }}
+                        />
+                        {/* <div className='absolute right-0'>
                             <Select options={
                                 publishOptions
                             }
@@ -151,10 +212,11 @@ export function FormAnalysis() {
                                 onChange={e => {
                                     setPublishIndex(prev => ({ ...prev, b: publishOptions.indexOf(e) }))
                                 }}
+                                isMulti
                                 isSearchable={false}
                                 className='w-60 bg-neutral-50 rounded-lg shadow border border-sky-400 justify-stretch items-center '
                             />
-                        </div>
+                        </div> */}
 
                     </div>
 

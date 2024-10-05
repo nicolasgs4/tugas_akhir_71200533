@@ -380,8 +380,10 @@ app.get("/value/:id", (req, res) => {
         const questionArray = JSON.parse(results[0].form_question)[req.query.index];
         const answerElement = questionArray.answerElement || [];
         const newValueArray = [];
-        const publishStart = req.query.publish_start ? Array.from(new Set(req.query.publish_start)) : [];
-        const publishEnd = req.query.publish_end ? Array.from(new Set(req.query.publish_end)) : [];
+        const publishStart = req.query.publish_start || [];
+        const publishEnd = req.query.publish_end || [];
+        console.log(publishStart)
+        console.log(publishEnd)
         const type = questionArray.type;
         if (publishStart.length <= 0 && publishEnd.length <= 0) {
           connection.query(
