@@ -17,6 +17,7 @@ const questionSettingTemplate = {
     2: {},
     3 : { 
             isMultipleSelection: true,
+            hasOtherOption: false,
             multiTypeDropdown: 0,
             min: null,
             max: null,

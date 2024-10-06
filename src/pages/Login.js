@@ -45,8 +45,6 @@ export function Login() {
     }, [cookies]); // Re-run if cookies change
 
     return (
-        //             <form onSubmit={handleSubmit} method="POST" className='border-2 p-6 rounded-md space-y-4'>
-
         <div  className="w-full h-full flex bg-white">
             <img className="w-[837px] h-[543px] left-[301px] top-[278px] absolute" src="logo_fti.png" />
             <div className="w-[1440px] h-[882px] left-0 top-[142px] absolute bg-white/10 backdrop-blur-[25px]"></div>
@@ -99,7 +97,6 @@ export function Login() {
                                 </div>
                             </div>
                         </div>
-                        {/* Login Button */}
                         <button type="submit" value="Submit" className="w-[363px] px-4 py-3.5 bg-[#3dc0ef] rounded-[41px] justify-center items-center gap-2 inline-flex">
                             Login
                         </button>
