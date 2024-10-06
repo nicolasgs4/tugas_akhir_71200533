@@ -71,17 +71,16 @@ export default function ValueContainer({ id, index, question, publishArray }) {
   
           res.map((element, index) => {
             datasets.push({
-              label: `Dataset ${index + 1}`, // Label otomatis
+              label: `Dataset ${index + 1}`, 
               data: Object.values(element),
               backgroundColor: defaultbackgroundColor[index],
               borderWidth: 0,
             });
           });
   
-          // Mengatur labels untuk bar chart
           setValueData({
-            labels: res.length > 0 ? Object.keys(res[0]) : [], // Menyimpan label asli
-            datasets: datasets, // Tetap gunakan datasets
+            labels: res.length > 0 ? Object.keys(res[0]) : [], 
+            datasets: datasets, 
           });
         }
         return;

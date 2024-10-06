@@ -5,7 +5,7 @@ const qestionTypeValue = {
     'text' : 1,
     'toggle' : 2,
     'multi' : 3,
-    'rating': 4,
+    // 'rating': 4,
     'scale' : 5 
 }
 

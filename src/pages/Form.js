@@ -157,7 +157,6 @@ export function Form() {
             const res = await response.json();
 
             if (res) {
-                navigate("/End");
                 return;
             }
             throw new Error(res.message);
@@ -256,7 +255,7 @@ export function Form() {
                         </button>
                         <div className="text-sky-400 text-2xl font-black font-['Montserrat']">Pembuatan Kuesioner</div>
                     </div>
-                    <form onSubmit={() => { handlePostValues();  }}>
+                    <div >
                         {/* <button onClick={() => handlePostValues()}>Click</button> */}
                         <QuestionContent
                             formDetail={formDetail}
@@ -272,11 +271,11 @@ export function Form() {
                         {
                             isDisabled.edit && !isDisabled.fill ?
                             <div className='flex flex-wrap'>
-                                <button type='submit' value='Submit' className='ml-8 bg-sky-400 text-neutral-50 p-2 rounded-xl'>SUBMIT</button>
+                                <div className='ml-8 bg-sky-400 text-neutral-50 p-2 rounded-xl' onClick={() => {handlePostValues(); navigate("/End")}}>SUBMIT</div>
                             </div>
                             : null
                         }
-                    </form>
+                    </div>
                 </div>
                 <div className='md:w-1/4 sm:w-0 flex justify-end overflow-y-auto'>
                     {

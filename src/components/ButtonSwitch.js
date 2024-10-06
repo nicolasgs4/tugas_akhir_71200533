@@ -4,11 +4,10 @@ import React from 'react';
 const ButtonSwitch = (props) => {
     const keyJson = props.keyJson;
     const formJson = props.formJson;
-    const question = props.question;
     const focusIndex = props.focusIndex;
     const handleChange = props.handleChange;
-
-    var isChecked = formJson ? formJson[focusIndex] : question;
+    
+    var isChecked = formJson[focusIndex];
     const keyJsonItem = keyJson.split('.');
     keyJsonItem.map((k) => (
         isChecked = isChecked[k]
@@ -22,7 +21,7 @@ const ButtonSwitch = (props) => {
                     <input
                         type='checkbox'
                         checked={isChecked}
-                        onChange={() => handleChange(keyJson, !isChecked, focusIndex)}
+                        onChange={e => handleChange(keyJson, !isChecked, focusIndex)}
                         className='sr-only'
                     />
                     <div className={`block h-8 w-14 rounded-full ${isChecked ? 'bg-sky-400' : 'bg-gray-200'}`}></div>

@@ -98,22 +98,16 @@ function QuestionContainer({
   const hasRendered = useRef(false);
 
   useEffect(() => {
-    setToggleArr(
-      question["answerElement"] === null ? [] : question["answerElement"]
-    );
-  }, []);
-
-  useEffect(() => {
     if (toggleArr !== null && toggleArr !== undefined && toggleArr.length > 0) {
-      console.log(toggleArr);
-      handleChange("answerElement", toggleArr, index);
+        console.log(toggleArr)
+        handleChange('answerElement', toggleArr, index)
     }
-  }, [toggleArr]);
+}, [toggleArr])
 
-  useEffect(() => {
+useEffect(() => {
     multiValue.sort((a, b) => a - b);
-    handleChange("value", multiValue, index);
-  }, [multiValue]);
+    handleChange('value', multiValue, index)
+}, [multiValue])
 
   return (
     <div className="w-full ">
@@ -313,10 +307,10 @@ function QuestionContainer({
                 >
                   Tambah Pilihan
                 </button>
-                {!othersAdded && ( 
+                {/* {!othersAdded && ( 
                   <button
                     onClick={() => {
-                      const newElements = [...(question["answerElement"] || []), "Others"];
+                      const newElements = [...(question["answerElement"] || []), "Others : "];
                       handleChange("answerElement", newElements, index);
                       setOthersAdded(true); 
                     }}
@@ -325,17 +319,13 @@ function QuestionContainer({
                     Tambah Others
                   </button>
                 )}
-              
+               */}
             </div>
           )}
         </div>
       )}
     </div>
   )}
-
-
-
-
         {activeIndex === 4 && <div></div>}
 
         {activeIndex === 5 && (
