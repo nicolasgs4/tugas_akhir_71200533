@@ -1,235 +1,258 @@
-import { ArcElement, Chart, Tooltip } from 'chart.js';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
-import './../App.css';
-import { getElementAtEvent, Pie } from 'react-chartjs-2';
-import { useEffect, useRef, useState } from 'react';
-import Select from 'react-select'
-import randomColor from 'randomcolor';
-import { ChromePicker } from 'react-color';
-import { useCookies } from 'react-cookie';
-import { da } from 'date-fns/locale';
+import { ArcElement, Chart, Tooltip } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels";
+import "./../App.css";
+import { getElementAtEvent, Pie } from "react-chartjs-2";
+import { useEffect, useRef, useState } from "react";
+import Select from "react-select";
+import randomColor from "randomcolor";
+import { ChromePicker } from "react-color";
+import { useCookies } from "react-cookie";
 
-const ChartCard = ({valueData}) => {
-    const [form, setForm] = useState({form_id: null, value_id: null, question_type: null})
-    const [data, setData] = useState();
-    const chartRef = useRef();
-    const titleOptions =  useRef([]);
-    const questionOptions = useRef([]);
+const ChartCard = ({ valueData }) => {
+  const [form, setForm] = useState({
+    form_id: null,
+    value_id: null,
+    question_type: null,
+  });
+  const [data, setData] = useState();
+  const chartRef = useRef();
+  const titleOptions = useRef([]);
+  const questionOptions = useRef([]);
+  const questionSelect = useRef();
+  const [colorSelected, setColorSelected] = useState();
+  const elementIndex = useRef();
+  const clickPos = useRef();
+  const [cookie, setCookie, removeCookie] = useCookies(["cookies-n-cream"]);
+  const [displayColorPicker, setDisplayColorPicker] = useState(false);
 
-    const questionSelect = useRef();
+  const defaultbackgroundColor = [
+    "#FF4853",
+    "#3BC0ED",
+    "#03F1A3",
+    "#FDEA5F",
+    "#FF3136",
+    "#0075B6",
+    "#11D983",
+    "#F4A631",
+    "#FF4853",
+    "#0098DC",
+    "#00E376",
+    "#FEC60C",
+  ];
 
-    const [colorSelected, setColorSelected] = useState();
-    const elementIndex = useRef();
-    const clickPos = useRef();
+  const handleClick = (color) => {
+    setDisplayColorPicker(true);
+    setColorSelected(color);
+  };
 
-    const [cookie, setCookie, removeCookie] = useCookies(['cookies-n-cream']);
+  const handleClose = () => {
+    setDisplayColorPicker(false);
+    setColorSelected();
+  };
 
-    const defaultbackgroundColor = [
-        '#FF4853',
-        '#3BC0ED',
-        '#03F1A3',
-        '#FDEA5F',
-        '#FF3136',
-        '#0075B6',
-        '#11D983',
-        '#F4A631',
-        '#FF4853',
-        '#0098DC',
-        '#00E376',
-        '#FEC60C'
-    ]
-    
-    const [displayColorPicker, setDisplayColorPicker] = useState(false)
-    
-    const handleClick = (color) => {
-        setDisplayColorPicker(true);
-        setColorSelected(color);
-    };
+  const handleChangeComplete = (color, e) => {
+    setColorSelected(color.hex);
+    const colorSet = data.datasets[0].backgroundColor;
+    colorSet[elementIndex.current] = color.hex;
 
-    const handleClose = () => {
-        setDisplayColorPicker(false);
-        setColorSelected();
-    };
+    setData((prev) => ({
+      ...prev,
+      datasets: [
+        {
+          ...prev.datasets[0],
+          backgroundColor: colorSet,
+        },
+      ],
+    }));
+  };
 
-    const handleChangeComplete = (color, e) => {
-        setColorSelected(color.hex);
-        const colorSet = data.datasets[0].backgroundColor;
-        colorSet[elementIndex.current] = color.hex
-
-        setData((prev) => ({
-            ...prev,
-            datasets: [
-                {
-                    ...prev.datasets[0],
-                    backgroundColor: colorSet,
-                },
-            ],
-        }));
-    };
-
-    const handleGetFormValue = async () => {
-        try {
-            const response = await fetch("/value/" + form.form_id + "?index=" + form.value_id, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                }
-            });
-            const res = await response.json();
-            if (res) {
-                if (res.length <= 0) return;
-                if (data) chartRef.current.reset();
-                const randomizedColor = [];
-                for (let i = 0; i < Object.keys(res[0]).length; i++) {
-                    randomizedColor.push(randomColor());
-                }
-                setData({
-                    labels: Object.keys(res[0]),
-                    datasets: [
-                        {
-                            label: 'Jumlah',
-                            data: Object.values(res[0]),
-                            backgroundColor: defaultbackgroundColor.slice(0, Object.keys(res[0]).length),
-                            borderWidth: 0
-                        }
-                    ]
-                })
-                // setCookie("cookies-n-cream", JSON.parse(defaultbackgroundColor));
-                return;
-            }
-            throw new Error(res.message);
-        } catch (err) {
-            console.error(err);
+  const handleGetFormValue = async () => {
+    try {
+      const response = await fetch(
+        `/value/${form.form_id}?index=${form.value_id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
-    };
-    
-    const handleCopyChart = () => {
-        const canvas = chartRef.current.canvas;
-        if (canvas) {
-            canvas.toBlob((blob) => {
-                if (blob) {
-                    const item = new ClipboardItem({ 'image/png': blob });
-                    navigator.clipboard.write([item]).then(() => {
-                        console.log('Canvas copied to clipboard');
-                    }).catch((error) => {
-                        console.error('Error copying to clipboard: ', error);
-                    });
-                }
-            })
-        }
+      );
+      const res = await response.json();
+      if (res && res.length > 0) {
+        const labels = Object.keys(res[0]);
+        const filteredValues = Object.values(res[0]).filter(
+          (value) => value !== 0
+        );
+        const filteredLabels = labels.filter(
+          (_, index) => Object.values(res[0])[index] !== 0
+        );
+
+        const randomizedColor = filteredLabels.map(() => randomColor());
+
+        setData({
+          labels: filteredLabels,
+          datasets: [
+            {
+              label: "Jumlah",
+              data: filteredValues,
+              backgroundColor: defaultbackgroundColor.slice(
+                0,
+                filteredLabels.length
+              ),
+              borderWidth: 0,
+            },
+          ],
+        });
+      }
+    } catch (err) {
+      console.error(err);
     }
+  };
 
-    const hasRendered = useRef(false);
+  const handleCopyChart = () => {
+    const canvas = chartRef.current.canvas;
+    if (canvas) {
+      canvas.toBlob((blob) => {
+        const item = new ClipboardItem({ "image/png": blob });
+        navigator.clipboard.write([item]);
+      });
+    }
+  };
 
-    useEffect(() => {
-        titleOptions.current = Object.entries(valueData).map(([key, value]) => ({
-            value: key,
-            label: value.form_title
-        }));
-    },[])
+  useEffect(() => {
+    titleOptions.current = Object.entries(valueData).map(([key, value]) => ({
+      value: key,
+      label: value.form_title,
+    }));
+  }, []);
 
-    useEffect(() => {
-        if (!hasRendered.current) { hasRendered.current = true; return; }
-        if (form.form_id !== null && form.value_id !== null) handleGetFormValue();
-    }, [form])
+  useEffect(() => {
+    if (form.form_id && form.value_id) handleGetFormValue();
+  }, [form]);
 
-    useEffect(() => {
-        if (!hasRendered.current) { hasRendered.current = true; return; }
-        if (data != null) chartRef.current.getDatasetMeta(0).data[0].hidden = false;
-        if (data != undefined) console.log(data)
-    }, [data])
+  useEffect(() => {
+    if (data) chartRef.current.getDatasetMeta(0).data[0].hidden = false;
+  }, [data]);
 
-    Chart.register(ArcElement, Tooltip);
+  Chart.register(ArcElement, Tooltip);
+  Chart.defaults.set("plugins.datalabels", { color: "#000000" });
 
-    Chart.defaults.set('plugins.datalabels', {
-        color: '#000000'
-    });
-
-    return (
-        <div className="h-full p-2.5 bg-neutral-50 rounded-[15px] border border-neutral-500 flex-col items-center gap-2.5 flex">
-            <div className="flex-col justify-start items-start gap-2 flex">
-                <div className="text-center text-zinc-900 text-base font-normal font-['Inter'] text-xl leading-normal">Chart Pilihan Pertanyaan</div>
-            </div>
-            <div className='w-full'>
-                <Select placeholder="Pilih Kuesioner yang ingin dilihat"
-                    options={titleOptions.current}
-                    onChange={e => {
-                        console.log(valueData[e.value].question_type[0].name)
-                        setForm(prev => ({ ...prev, form_id: e.value, value_id: null }));
-                        questionOptions.current = Object.entries(valueData[e.value].question_type)
-                            .filter(([key, value]) => value.type !== "section" && value.type !== "text")
-                            .map(([key, value]) => (
-                            {
-                                value: key,
-                                label: value.name
-                            }));
-                    }}
-                />
-            </div>
-            <div className='w-full'>
-                <Select ref={questionSelect} options={questionOptions.current} placeholder="Pilih pertanyaan yang ingin dilihat" onChange={e => {
-                    setForm(prev => ({ ...prev, value_id: e.value, question_type: valueData[form.form_id].question_type[e.value] }));
-                }} />
-            </div>
-            <div className='w-full flex relative justify-start'>
-                <div className='w-[250px]'>
-                    {
-                        data != null
-                            && <Pie 
-                                ref={chartRef} 
-                                data={data}
-                                plugins={[ChartDataLabels]} 
-                                onClick={e => {
-                                    if (getElementAtEvent(chartRef.current, e).length <= 0) return;
-                                    handleClick(getElementAtEvent(chartRef.current, e)[0].element.options.backgroundColor);
-                                    elementIndex.current = getElementAtEvent(chartRef.current, e)[0].index;
-                                    clickPos.current = { x: e.pageX + 'px', y: e.pageY + 'px' };
-                                }
-                            } />
-                    }
-                </div>
-                {
-                    (data != null || data != undefined)
-                        &&
-                    <div className="h-[194px] p-2.5 bg-white rounded-[15px] shadow flex-col justify-start items-start gap-2 inline-flex">
-                        <ul className='flex flex-col'>
-                            {data.labels && data.labels.length > 0 &&
-                                data.labels.map((element, index) => (
-                                    <li key={index} className="justify-start items-center inline-flex gap-4">
-                                        <button onClick={e => {
-                                            clickPos.current = { x: e.pageX + 'px', y: e.pageY + 'px' };
-                                            elementIndex.current = index;
-                                            handleClick(data.datasets[0].backgroundColor[index]);
-                                        }
-                                        } className="w-5 h-5 rounded-[50px]" style={{ backgroundColor: data.datasets[0].backgroundColor[index] }} />
-                                        <div className="text-[#1a1a1a] text-base font-normal font-['Inter'] leading-normal">
-                                            {element}
-                                        </div>
-                                        
-                                    </li>
-                                ))
-                            }
-                        </ul>
-                    </div>
+  return (
+    <div className="p-4 mb-[1.5rem] bg-neutral-50 rounded-[15px] border border-neutral-500 flex-col items-center gap-4 flex min-h-[30rem] h-auto">
+      <h2 className="text-lg font-semibold text-center text-gray-700">
+        Chart Pilihan Pertanyaan
+      </h2>
+      <div className="w-full">
+        <Select
+          placeholder="Pilih Kuesioner yang ingin dilihat"
+          options={titleOptions.current}
+          onChange={(e) => {
+            setForm((prev) => ({ ...prev, form_id: e.value, value_id: null }));
+            questionOptions.current = Object.entries(
+              valueData[e.value].question_type
+            )
+              .filter(
+                ([key, value]) =>
+                  value.type !== "section" && value.type !== "text"
+              )
+              .map(([key, value]) => ({
+                value: key,
+                label: value.name,
+              }));
+          }}
+        />
+      </div>
+      <div className="w-full">
+        <Select
+          ref={questionSelect}
+          options={questionOptions.current}
+          placeholder="Pilih Pertanyaan yang ingin dilihat"
+          onChange={(e) => {
+            setForm((prev) => ({
+              ...prev,
+              value_id: e.value,
+              question_type: valueData[form.form_id].question_type[e.value],
+            }));
+          }}
+        />
+      </div>
+      <div className="relative flex flex-col items-center">
+        <div className="w-[250px]">
+          {data && (
+            <Pie
+              ref={chartRef}
+              data={data}
+              plugins={[ChartDataLabels]}
+              onClick={(e) => {
+                if (getElementAtEvent(chartRef.current, e).length > 0) {
+                  handleClick(
+                    getElementAtEvent(chartRef.current, e)[0].element.options
+                      .backgroundColor
+                  );
+                  elementIndex.current = getElementAtEvent(
+                    chartRef.current,
+                    e
+                  )[0].index;
+                  clickPos.current = { x: e.pageX + "px", y: e.pageY + "px" };
                 }
-                
-                {data != null &&
-                    <button className='absolute right-0' onClick={handleCopyChart}>
-                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#0075b6"><path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z" /></svg>
-                    </button>
-                }
-            </div>
-            
-            {displayColorPicker &&
-                <div className={`absolute z-[2]`} style={{left: clickPos.current.x, top: clickPos.current.y}}>
-                    <div className='fixed top-0 right-0 left-0 bottom-0' onClick={handleClose} />
-                    <ChromePicker color={colorSelected} disableAlpha={true} onChange={handleChangeComplete}/>
-                </div> 
-            }
-            
-            
-            
+              }}
+            />
+          )}
         </div>
-    )
-}
+        {data && (
+          <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4 w-full">
+            <ul>
+              {data.labels.map((element, index) => (
+                <li key={index} className="flex items-center gap-2 mb-2">
+                  <button
+                    className="w-5 h-5 rounded-full flex-shrink-0"
+                    style={{
+                      backgroundColor: data.datasets[0].backgroundColor[index],
+                    }}
+                    onClick={(e) => {
+                      clickPos.current = {
+                        x: e.pageX + "px",
+                        y: e.pageY + "px",
+                      };
+                      elementIndex.current = index;
+                      handleClick(data.datasets[0].backgroundColor[index]);
+                    }}
+                  />
+                  <span className="text-sm font-medium text-gray-700">
+                    {element}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {data != null && (
+          <button className="absolute right-0" onClick={handleCopyChart}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24px"
+              viewBox="0 -960 960 960"
+              width="24px"
+              fill="#0075b6"
+            >
+              <path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z" />
+            </svg>
+          </button>
+        )}
+      </div>
+
+      {displayColorPicker && (
+        <div
+          className="absolute z-10"
+          style={{ left: clickPos.current.x, top: clickPos.current.y }}
+        >
+          <div className="fixed inset-0" onClick={handleClose} />
+          <ChromePicker color={colorSelected} onChange={handleChangeComplete} />
+        </div>
+      )}
+    </div>
+  );
+};
+
 export default ChartCard;

@@ -142,7 +142,7 @@ const ProgressChartCard = () => {
     Chart.register(BarElement, Tooltip, CategoryScale, LinearScale, Title, PointElement, LineElement, TimeScale, Filler);
 
     return (
-        <div className='w-full h-full p-2.5 bg-neutral-50 rounded-[15px] border border-neutral-500 inline-flex flex-col items-center gap-2.5 relative'>
+        <div className='w-full h-auto p-2.5 bg-neutral-50 rounded-[15px] border border-neutral-500 inline-flex flex-col items-center relative'>
             <div>Progres Kuesioner</div>
             <div>{curQuest.current + " dari " + totQuest.current + " mencapati target pengisian"}</div>
             <div className='flex flex-col w-full overflow-y-scroll'>

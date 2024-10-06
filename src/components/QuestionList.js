@@ -74,7 +74,7 @@ function QuestionList({ formJson, setFormJson, focusIndex }) {
                             <path d="M6.5 11.5H9.5M9.5 11.5H12.5M9.5 11.5V8.5M9.5 11.5V14.5M1.5 20.9V2.1C1.5 1.94087 1.56321 1.78826 1.67574 1.67574C1.78826 1.56321 1.94087 1.5 2.1 1.5H13.752C13.9111 1.50014 14.0636 1.56345 14.176 1.676L17.324 4.824C17.38 4.8799 17.4243 4.94632 17.4545 5.01943C17.4847 5.09254 17.5002 5.1709 17.5 5.25V20.9C17.5 20.9788 17.4845 21.0568 17.4543 21.1296C17.4242 21.2024 17.38 21.2685 17.3243 21.3243C17.2685 21.38 17.2024 21.4242 17.1296 21.4543C17.0568 21.4845 16.9788 21.5 16.9 21.5H2.1C2.02121 21.5 1.94319 21.4845 1.87039 21.4543C1.79759 21.4242 1.73145 21.38 1.67574 21.3243C1.62002 21.2685 1.57583 21.2024 1.54567 21.1296C1.51552 21.0568 1.5 20.9788 1.5 20.9Z" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                             <path d="M13.5 1.5V4.9C13.5 5.05913 13.5632 5.21174 13.6757 5.32426C13.7883 5.43679 13.9409 5.5 14.1 5.5H17.5" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
-                        <div onClick={handleAddSection} className="text-black text-base font-normal  underline">Tambah Halaman</div>
+                        <div onClick={handleAddSection} className="text-black text-base font-normal  underline">Tambah Section</div>
                     </button>
                 </div>
                 

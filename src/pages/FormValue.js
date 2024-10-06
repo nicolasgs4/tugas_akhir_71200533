@@ -44,14 +44,22 @@ export function FormValue() {
         }
     };
 
+    // useEffect(() => {
+    //     if (!hasRendered.current) { hasRendered.current = true; return; }
+    //     handleGetValues();
+    //     console.log(formValueData)
+    // }, [])
+
     useEffect(() => {
-        if (!hasRendered.current) { hasRendered.current = true; return; }
-        handleGetValues();
-        console.log(formValueData)
-    }, [])
+        if (!hasRendered.current) {
+            handleGetValues();
+            hasRendered.current = true;
+        }
+    }, []); // Gunakan array dependency yang kosong untuk memastikan fetch data hanya terjadi sekali
+    
 
     return (
-        <div className='h-auto min-h-screen bg-neutral-50 '>
+        <div className='h-[20rem] min-h-screen bg-neutral-50 '>
             <div className='flex' >
                 <div className='md:w-1/4 sm:w-0 flex justify-start'>
                     
