@@ -25,7 +25,7 @@ function ResizableTextArea(props) {
 
     useEffect(() => {
         autoResizeTextarea();
-    }, [])
+    }, [props.onChange])
 
 
 

@@ -2,6 +2,7 @@ import './../App.css';
 import { getQuestionTypeValue } from '../data/QuestionData';
 import { useEffect, useRef, useState } from 'react';
 import ResizableTextArea from './ResizableTextArea';
+import ButtonSwitch from './ButtonSwitch';
 
 function QuestionContainer({
     sectionIndex,
@@ -75,8 +76,11 @@ function QuestionContainer({
     }, [])
 
     useEffect(() => {
+        setOnEdit(false);
+    }, [focusIndex])
+
+    useEffect(() => {
         if (toggleArr !== null && toggleArr !== undefined && toggleArr.length > 0) {
-            console.log(toggleArr)
             handleChange('answerElement', toggleArr, index)
         }
     }, [toggleArr])
@@ -87,7 +91,7 @@ function QuestionContainer({
     }, [multiValue])
 
     return (
-        <div className='w-full '>
+        <div className='w-full cursor-pointer'>
             {
                 activeIndex == 0 ?
                     <div className='flex flex-wrap'>
@@ -100,14 +104,14 @@ function QuestionContainer({
                 onClick={() => handleFocus(index)}
                 className={`w-full -translate-y-6 pl-5 pr-3 py-3 bg-neutral-50 rounded-xl border border-sky-400 flex-col justify-start items-start gap-5 inline-flex relative cursor cursor-pointer select-none ${focusIndex == index ? 'border-l-4 border-r border-t-8 border-b border-sky-400' : ''}`}
             >
-                <label className='h-fit w-full flex text-black text-2xl font-normal relative flex-wrap'>
+                <label className='h-fit w-full flex text-black text-2xl font-normal relative flex-wrap cursor-text'>
                     {
                         question.type == "section" ?
                             null :
                             <a className='mt-4'>{index + 1 + '. '}</a>
                     }
                     <ResizableTextArea disabled={isDisabled.edit} type='text' className='w-3/4 bg-neutral-50 pt-4 px-2 flex-wrap overflow-auto' value={question.name} onChange={e => handleChange('name', e.target.value, index)} resize='vertical' />
-                    <a hidden={!question.isRequired} className='text-red-500 absolute rigth-[12px]'>*</a>
+                    <a hidden={!question.isRequired} className='text-red-500'>*</a>
                 </label>
                 {
                     !isDisabled.edit ?
@@ -157,33 +161,38 @@ function QuestionContainer({
                                     <ResizableTextArea
                                         className='w-full rounded-[10px] border border-black overflow-auto p-4 text-2xl flex-wrap'
                                         defaultValue={
-                                            question['answerElement'] != null ?
+                                            question['answerElement'] != null &&
                                                 question['answerElement'].join('\n')
-                                                :
-                                                null
                                         }
-                                        onBlur={
-                                            e => (
+                                        onChange={
+                                            e => {
                                                 handleChange('answerElement',
                                                     textAreaSplitter(e.target.value),
-                                                    index),
-                                                setOnEdit(!onEdit),
-                                                setMultiValue([])
-                                            )
+                                                    index)
+                                            }
+                                        }
+                                        onBlur={
+                                            () => setMultiValue([])
                                         }
                                         autoFocus={true}
                                         resize={"vertical"}
                                     />
+                                    <ButtonSwitch keyJson='setting.hasOtherOption' question={question} focusIndex={focusIndex} handleChange={handleChange}>Required</ButtonSwitch>
+
+                                    <button className='text-red-400' onClick={() => setOnEdit(false)}>
+                                        Tutup 
+                                    </button>
                                 </div>
                                 :
                                 <div className='flex flex-col gap-2'>
                                     {question['answerElement'] != null &&
                                         question['answerElement'].map((element, elementIndex) =>
-                                            <label key={'multi' + elementIndex} className='flex items-center'>
+                                            <label key={'multi' + elementIndex} className='flex items-center gap-2'>
                                                 <input
                                                     type={question['setting'].isMultipleSelection ? "checkbox" : "radio"}
                                                     className='hidden'
                                                     disabled={isDisabled.fill}
+                                                    placeholder='Pilihan Lain'
                                                     onChange={e => {
                                                         e.target.checked ??
                                                             question['value'].some(value => value == elementIndex) ?
@@ -191,7 +200,7 @@ function QuestionContainer({
                                                             :
                                                             setMultiValue(multiValue.filter((i) => i != elementIndex))
                                                     }
-                                                    } />
+                                                } />
                                                 {
                                                     question['value'].some(value => value == elementIndex) ?
                                                         <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -202,10 +211,66 @@ function QuestionContainer({
                                                             <rect x="0.5" y="0.5" width="19" height="19" rx="3.5" stroke="#AEAEB2" />
                                                         </svg>
                                                 }
+                                                
                                                 <p>{element}</p>
                                             </label>
                                         )
                                     }
+                                        {
+                                            question['setting']['hasOtherOption'] && (
+                                                <label className="flex items-center gap-2">
+                                                    <input
+                                                        type={question['setting'].isMultipleSelection ? "checkbox" : "radio"}
+                                                        className="hidden"
+                                                        disabled={isDisabled.fill}
+                                                        onChange={e => {
+                                                            if (e.target.checked) {
+                                                                // Add object with length as key if checkbox/radio is checked
+                                                                setMultiValue(prev => [
+                                                                    ...prev,
+                                                                    { [question['answerElement'].length]: "" }
+                                                                ]);
+                                                            } else {
+                                                                // Remove the object when checkbox/radio is unchecked
+                                                                setMultiValue(prev =>
+                                                                    prev.filter(value => !value.hasOwnProperty(question['answerElement'].length))
+                                                                );
+                                                            }
+                                                        }}
+                                                    />
+                                                    {
+                                                        question['value'].some(value => value.hasOwnProperty(question['answerElement'].length)) ? (
+                                                            // Checked state SVG
+                                                            <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                <rect width="20.0543" height="20" rx="4" fill="black" />
+                                                                <path d="M14.3587 7L7.92459 13.4167L5 10.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                                            </svg>
+                                                        ) : (
+                                                            // Unchecked state SVG
+                                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                <rect x="0.5" y="0.5" width="19" height="19" rx="3.5" stroke="#AEAEB2" />
+                                                            </svg>
+                                                        )
+                                                    }
+                                                    <ResizableTextArea
+                                                        disabled={!question['value'].some(value => value.hasOwnProperty(question['answerElement'].length))}
+                                                        placeholder={"Pilihan Lainnya"}
+                                                        value={
+                                                            question['value'][question['value'].length] !== null ? 
+                                                                question['value'][question['value'].length] : ''
+                                                        }
+                                                        onChange={e => {
+                                                            const newValue = { [question['answerElement'].length]: e.target.value };
+                                                            question['value'] = [
+                                                                ...question['value'].filter(value => !value.hasOwnProperty(question['answerElement'].length)),
+                                                                newValue
+                                                            ];
+                                                        }}
+                                                    ></ResizableTextArea>
+                                                </label>
+                                            )
+                                        }
+
                                     {!isDisabled.edit ?
                                         <div>
                                             <button onClick={e => setOnEdit(!onEdit)} className='flex items-center gap-2'>

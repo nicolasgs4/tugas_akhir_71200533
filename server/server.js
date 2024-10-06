@@ -427,12 +427,17 @@ app.get("/value/:id", (req, res) => {
                       if (element.value.length > 0) {
                         Array.from(element.value).forEach(i => {
                           const questionElement = answerElement[i];
-                          newValue[questionElement] = (newValue[questionElement] || 0) + 1;
+                          if (typeof i === 'object' && i !== null && !Array.isArray(i)) {
+                            newValue["Pilihan Lain"] = (newValue[questionElement] || 0) + 1;
+                          } else {
+                            newValue[questionElement] = (newValue[questionElement] || 0) + 1;
+                          }
                         });
                       }
                     }
                   });
                 }
+                console.log(newValue)
                 newValueArray.push(newValue);
                 res.json(newValueArray);
               } else {
