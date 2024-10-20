@@ -46,66 +46,57 @@ export function Login() {
 
     return (
 
-        <div  className="w-full h-full flex bg-white">
-            <img className="w-[837px] h-[543px] left-[301px] top-[278px] absolute" src="logo_fti.png" />
-            <div className="w-[1440px] h-[882px] left-0 top-[142px] absolute bg-white/10 backdrop-blur-[25px]"></div>
-            <div className="w-[1440px] h-[68px] left-0 top-[957px] absolute">
-                <div className="w-[1440px] px-[117px] py-[18px] left-0 top-0 absolute bg-white justify-end items-center inline-flex">
-                    <div className="text-right text-gray-500 text-lg font-semibold font-['Inter'] leading-7">@2024. Universitas Kristen Duta Wacana</div>
-                </div>
-                <img className="w-[79px] h-[50.43px] left-[117px] top-[9.08px] absolute" src="logo_fti.png" />
+        <div className="w-full min-h-screen flex justify-center items-center bg-white relative overflow-hidden">
+        {/* Background image */}
+        <img className="absolute w-[837px] h-[543px]" src="logo_fti.png" alt="Background" />
+
+        {/* Blurred overlay */}
+        <div className="absolute inset-0 bg-white/10 backdrop-blur-[25px]"></div>
+
+        {/* Form */}
+        <form
+            onSubmit={handleSubmit}
+            method="POST"
+            className="p-[30px] bg-white rounded-lg shadow-lg relative z-10 flex flex-col items-center gap-6 max-w-[400px] w-full"
+        >
+            {/* Logo */}
+            <img className="w-[67px] h-12" src="logo_fti.png" alt="FTI Logo" />
+
+            {/* Email Input */}
+            <div className="flex flex-col gap-2 w-full">
+                <label className="text-gray-800 text-base font-semibold">Email</label>
+                <input
+                    type="text"
+                    placeholder="Masukan Username"
+                    ref={input.email}
+                    defaultValue="admin@email.com"
+                    className="w-full h-10 bg-white rounded border border-blue-500 px-2"
+                />
             </div>
 
-            <form onSubmit={handleSubmit} method="POST" className="p-[30px] left-[508px] top-[306px] absolute bg-white rounded-lg justify-start items-start gap-2.5 inline-flex">
-                <div className="flex-col justify-start items-center gap-6 inline-flex">
-                    <img className="w-[67px] h-12" src="logo_fti.png" />
-                    <div className="flex-col justify-start items-start gap-14 flex">
-                        <div className="flex-col justify-start items-center gap-6 flex">
-                            <div className="h-[72px] flex-col justify-start items-start gap-2 flex">
-                                <div className="self-stretch justify-start items-start inline-flex">
-                                    <div className="grow shrink basis-0 h-6 justify-start items-center gap-1 flex">
-                                        <div className="text-gray-800 text-base font-semibold font-['Inter'] leading-normal">Email</div>
-                                    </div>
-                                </div>
-                                <div className="self-stretch h-10 bg-green-500 shadow-inner flex-col justify-start items-start gap-2 flex">
-                                    <input
-                                        type='text'
-                                        placeholder='Masukan Username'
-                                        ref={input.email}
-                                        defaultValue={"admin@email.com"}
-                                        className="self-stretch h-10 bg-white rounded border border-blue-500 justify-start items-center gap-2 inline-flex">
-                                        
-                                    </input>
-                                </div>
-                            </div>
+            {/* Password Input */}
+            <div className="flex flex-col gap-2 w-full">
+                <label className="text-gray-800 text-base font-semibold">Kata Sandi</label>
+                <input
+                    type="password"
+                    placeholder="Masukan Password"
+                    ref={input.password}
+                    defaultValue="123"
+                    className="w-full h-10 bg-white rounded border border-blue-500 px-2"
+                />
+            </div>
 
-                            <div className="h-[72px] flex-col justify-start items-start gap-2 flex">
-                                <div className="self-stretch justify-start items-start inline-flex">
-                                    <div className="grow shrink basis-0 h-6 justify-start items-center gap-1 flex">
-                                        <div className="text-gray-800 text-base font-semibold font-['Inter'] leading-normal">Kata Sandi</div>
-                                    </div>
-                                </div>
-                                <div className="self-stretch h-10 flex-col justify-start items-start gap-2 flex">
-                                    <div className="self-stretch h-10 bg-white rounded border border-gray-300 justify-start items-center gap-2 inline-flex">
-                                        <input 
-                                            type='password'
-                                            placeholder='Masukan Password'
-                                            ref={input.password}
-                                            defaultValue={"123"}
-                                            className="self-stretch h-10 bg-white rounded border border-blue-500 justify-start items-center gap-2 inline-flex">
-                                        </input>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {/* Login Button */}
-                        <button type="submit" value="Submit" className="w-[363px] px-4 py-3.5 bg-[#3dc0ef] rounded-[41px] justify-center items-center gap-2 inline-flex">
-                            Login
-                        </button>
-                    </div>
-                </div>
-            </form>
+            {/* Login Button */}
+            <button type="submit" className="w-full py-3.5 bg-[#3dc0ef] rounded-[41px] text-white text-center">
+                Login
+            </button>
+        </form>
+
+        {/* Footer */}
+        <div className="absolute bottom-0 w-full py-4 text-center text-gray-500 text-lg font-semibold">
+            @2024. Universitas Kristen Duta Wacana
         </div>
+    </div>
     );
 }
 

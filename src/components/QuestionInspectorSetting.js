@@ -23,7 +23,7 @@ export default function QuestionInspectorSetting(props) {
 
     return (
         <>  
-            {
+            {/* {
                 activeIndex === 1 ?
                 <>
                     <ButtonSwitch keyJson='setting.hasMaxChar' formJson={props.formJson} focusIndex={props.focusIndex} handleChange={props.handleChange}>Max Character</ButtonSwitch>
@@ -33,7 +33,7 @@ export default function QuestionInspectorSetting(props) {
                         : props.formJson[props.focusIndex].setting.maxChar = null
                     } 
                 </> : null
-            }
+            } */}
             
             {
                 activeIndex === 2 ?
@@ -41,7 +41,7 @@ export default function QuestionInspectorSetting(props) {
                 </> : null
             }
             
-            {
+            {/* {
                 activeIndex === 3 ?
                 <>
                     <ButtonSwitch keyJson='setting.isRandomize' formJson={props.formJson} focusIndex={props.focusIndex} handleChange={props.handleChange}>Pilihan Acak</ButtonSwitch>
@@ -92,7 +92,7 @@ export default function QuestionInspectorSetting(props) {
                     
                     
                 </> : null
-            }
+            } */}
             
             {/* {
                 activeIndex === 4 ?

@@ -26,8 +26,7 @@ function App() {
                   <Route path="/form/:id/edit" element={<Form />} />
                   <Route path="/form/:id/view" element={<FormValue />} />
                   <Route path="/form/:id/analysis" element={<FormAnalysis />} />
-                  
-                  <Route path="/*" element={useNavigate("/login")} />
+                  <Route path="/* " element={useNavigate("/login")} />
               </Route>
               <Route path="/end" element={<End />}/>
             </Routes>
