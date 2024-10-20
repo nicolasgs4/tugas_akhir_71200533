@@ -13,7 +13,7 @@ function QuestionInspector({ formJson, focusIndex, handleChange, setIsDisabled }
         { value: 'text', label: 'Isian'},
         { value: 'toggle', label: 'Ya/Tidak'},
         { value: 'multi', label: 'Pilihan'},
-        { value: 'rating', label: 'Rating'},
+        // { value: 'rating', label: 'Rating'},
         { value: 'scale', label: 'Skala'}
     ]
 

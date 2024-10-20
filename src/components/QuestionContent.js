@@ -20,7 +20,6 @@ function QuestionContent({formDetail, formJson, setFormJson, focusIndex, setFocu
             ...prev.slice(index+1)
         ]);
     }
-
     return (
         <div className='h-full flex flex-col items-center gap-8 py-4 px-8'>
             <div className='w-full flex flex-wrap'>
@@ -31,16 +30,19 @@ function QuestionContent({formDetail, formJson, setFormJson, focusIndex, setFocu
                     className={`w-full pl-5 pr-3 py-3 -translate-y-6 bg-neutral-50 rounded-xl border border-sky-400 flex-col justify-start items-start gap-5 inline-flex relative cursor cursor-pointer select-none ${focusIndex == "title" ? 'border-l-4 border-r border-t-8 border-b border-sky-400' : ''}`}>
                     <label className='h-fit w-full flex text-black text-2xl font-normal relative flex-wrap'>
                         <ResizableTextArea type='text' className='w-3/4 bg-neutral-50 pt-4 px-2 flex-wrap overflow-auto'
-                            value={""}
+                            value={formDetail.formTitle || ""}
                             placeholder="Tuliskan Judul Kuisioner"
                             onChange={e => handleDetailChange('formTitle', e.target.value)} resize='vertical'
                             disabled={isDisabled.edit}
                         />
-                        <ResizableTextArea placeholder="Deskripsi Kuesioner (opsional)" type='text' className='w-3/4 bg-neutral-50 pt-4 px-2 flex-wrap overflow-auto'
-                            value={formDetail.formDescription}
-                            onChange={e => handleDetailChange('formDescription', e.target.value)} resize='vertical'
-                            disabled={isDisabled.edit}
-                        />
+                        {   
+                            (!isDisabled.edit || (!isDisabled.fill && formDetail.formDescription != "")) &&
+                            <ResizableTextArea placeholder="Deskripsi Kuesioner (opsional)" type='text' className='w-3/4 bg-neutral-50 pt-4 px-2 flex-wrap overflow-auto'
+                                value={formDetail.formDescription}
+                                onChange={e => handleDetailChange('formDescription', e.target.value)} resize='vertical'
+                                disabled={isDisabled.edit}
+                            />
+                        }
                     </label>
                 </div>
             </div>

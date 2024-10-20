@@ -4,12 +4,12 @@ import Headbar from '../components/Headbar';
 import Sidebar from '../components/Sidebar';
 import Create from './Create';
 import Dashboard from './Dashboard';
-import View from './View';
+// import View from './View';
 import Analysis from './Analysis';
 import { useCookies } from 'react-cookie';
 import { useEffect, useState } from 'react';
 
-export function Main({content}) {
+export function Main({content}) {  
     const cookie = useCookies(['skripsi-form']);
     const [userData, setUserData] = useState([]);
     
@@ -22,6 +22,7 @@ export function Main({content}) {
                 },
                 body: JSON.stringify(data),
             });
+            //tunggu res server.js /main
             const res = await response.json();
 
             if (res) {
@@ -40,17 +41,14 @@ export function Main({content}) {
     }, [])
 
 
-    useEffect(() => {
-    }, [userData])
-
     const contentLoader = () => {
         switch (content) {
             case 0:
                 return <Dashboard/>
             case 1: 
                 return <Create email={userData.email} username={userData.username} />
-            case 2:
-                return <View email={userData.email} username={userData.username}></View>
+            // case 2:
+            //     return <View email={userData.email} username={userData.username}></View>
             case 3:
                 return <Analysis email={userData.email} username={userData.username}></Analysis>
         }

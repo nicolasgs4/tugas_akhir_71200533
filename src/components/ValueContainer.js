@@ -3,6 +3,7 @@ import { getQuestionTypeValue } from "../data/QuestionData";
 import { useEffect, useRef, useState } from "react";
 import ResizableTextArea from "./ResizableTextArea";
 import randomColor from "randomcolor";
+import { formatISO, parseISO } from "date-fns";
 import {
   ArcElement,
   BarElement,
@@ -37,7 +38,11 @@ export default function ValueContainer({ id, index, question, publishArray }) {
     "#00E376",
     "#FEC60C",
   ];
-
+  const formatDateToIso = (date) => {
+      return formatISO(date, { representation: "date" })
+        .slice(0, 19)
+        .replace("T", " ");
+    };
   const hasRendered = useRef(false);
 
   const HandleGetFormValue = async () => {
@@ -71,7 +76,7 @@ export default function ValueContainer({ id, index, question, publishArray }) {
   
           res.map((element, index) => {
             datasets.push({
-              label: `Dataset ${index + 1}`, 
+              label: publishArray[index].publish_start, 
               data: Object.values(element),
               backgroundColor: defaultbackgroundColor[index],
               borderWidth: 0,
@@ -98,7 +103,7 @@ export default function ValueContainer({ id, index, question, publishArray }) {
       return;
     }
     HandleGetFormValue();
-    console.log(valueData);
+    console.log(publishArray)
   }, [publishArray]);
 
   Chart.register(
@@ -124,7 +129,7 @@ export default function ValueContainer({ id, index, question, publishArray }) {
             const label = this.getLabelForValue(value);
             const numericLabel = Number(label);
             if (!isNaN(numericLabel)) {
-              return numericLabel + 1; 
+              return numericLabel; 
             }
             return label.length > 10 ? label.substring(0, 10) + "..." : label;
           },
@@ -244,7 +249,7 @@ export default function ValueContainer({ id, index, question, publishArray }) {
                   className="w-4 h-4 mr-2"
                   style={{ backgroundColor: dataset.backgroundColor }}
                 ></div>
-                <span className="font-semibold text-sm">{dataset.label}</span>
+                <span className="font-semibold text-sm">{formatDateToIso(dataset.label)}</span>
                 <span className="text-xs ml-4 text-gray-600">
                   {`Jumlah data: ${dataset.data.reduce((a, b) => a + b, 0)}`}
                 </span>

@@ -44,12 +44,6 @@ export function FormValue() {
         }
     };
 
-    // useEffect(() => {
-    //     if (!hasRendered.current) { hasRendered.current = true; return; }
-    //     handleGetValues();
-    //     console.log(formValueData)
-    // }, [])
-
     useEffect(() => {
         if (!hasRendered.current) {
             handleGetValues();

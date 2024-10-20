@@ -8,6 +8,7 @@ const AuthProvider = ({ children }) => {
     const [cookie, setCookie, removeCookie] = useCookies(['skripsi-form']);
 
     const navigate = useNavigate();
+    // Cek Entry
     const loginAction = async (data) => {
         try {
         const response = await fetch("/login", {
@@ -17,10 +18,11 @@ const AuthProvider = ({ children }) => {
             },
             body: JSON.stringify(data),
         });
+        //tunggu res
         const res = await response.json();
-
         if (res) {
             setCookie("skripsi-form", res.token, {maxAge: 3600});
+            // Lempar ke dashboard
             navigate("/dashboard");
             return;
         }

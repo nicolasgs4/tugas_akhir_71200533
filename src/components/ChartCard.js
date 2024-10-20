@@ -49,7 +49,7 @@ const ChartCard = ({ valueData }) => {
     setDisplayColorPicker(false);
     setColorSelected();
   };
-
+//ganti warna handlechange
   const handleChangeComplete = (color, e) => {
     setColorSelected(color.hex);
     const colorSet = data.datasets[0].backgroundColor;
@@ -80,15 +80,17 @@ const ChartCard = ({ valueData }) => {
       const res = await response.json();
       if (res && res.length > 0) {
         const labels = Object.keys(res[0]);
+        //setelah res filter from user input (jawaban tertentu)
         const filteredValues = Object.values(res[0]).filter(
           (value) => value !== 0
         );
         const filteredLabels = labels.filter(
           (_, index) => Object.values(res[0])[index] !== 0
         );
-
+      
         const randomizedColor = filteredLabels.map(() => randomColor());
 
+        //label piechart
         setData({
           labels: filteredLabels,
           datasets: [
@@ -103,12 +105,15 @@ const ChartCard = ({ valueData }) => {
             },
           ],
         });
+      } else {
+        setData(null);
       }
     } catch (err) {
       console.error(err);
     }
   };
 
+  //copy chart
   const handleCopyChart = () => {
     const canvas = chartRef.current.canvas;
     if (canvas) {
@@ -118,13 +123,17 @@ const ChartCard = ({ valueData }) => {
       });
     }
   };
-
+  //fetch judul form
   useEffect(() => {
     titleOptions.current = Object.entries(valueData).map(([key, value]) => ({
       value: key,
       label: value.form_title,
     }));
+    // if (titleOptions.current.length <= 0){
+    //   setData(null);
+    // }
   }, []);
+  
 
   useEffect(() => {
     if (form.form_id && form.value_id) handleGetFormValue();
@@ -133,14 +142,14 @@ const ChartCard = ({ valueData }) => {
   useEffect(() => {
     if (data) chartRef.current.getDatasetMeta(0).data[0].hidden = false;
   }, [data]);
-
+  //Pie chart dashboard
   Chart.register(ArcElement, Tooltip);
   Chart.defaults.set("plugins.datalabels", { color: "#000000" });
 
   return (
     <div className="p-4 mb-[1.5rem] bg-neutral-50 rounded-[15px] border border-neutral-500 flex-col items-center gap-4 flex min-h-[30rem] h-auto">
       <h2 className="text-lg font-semibold text-center text-gray-700">
-        Chart Pilihan Pertanyaan
+        Overview Chart
       </h2>
       <div className="w-full">
         <Select
@@ -189,7 +198,7 @@ const ChartCard = ({ valueData }) => {
                     getElementAtEvent(chartRef.current, e)[0].element.options
                       .backgroundColor
                   );
-                  elementIndex.current = getElementAtEvent(
+                  elementIndex.current = getElementAtEvent( 
                     chartRef.current,
                     e
                   )[0].index;

@@ -7,8 +7,6 @@ const Sidebar = ({content}) => {
     return (
         <div className="w-1/4 sticky top-0 h-screen pt-[60px] pb-5 bg-neutral-50 border border-blue-400 justify-start items-start gap-2.5 flex min-w-max">
             <div className="w-[312px] h-full flex-col justify-start items-center gap-2.5 inline-flex">
-                {/* <img className="w-[79px] h-[50px]" src="/images/fti.png" /> */}
-                        {/* Wrap the img in a button for navigation */}
         <button onClick={() => navigate('/dashboard')}>
           <img className="w-[79px] h-[50px]" src="/images/fti.png" alt="FTI logo" />
         </button>
@@ -44,21 +42,6 @@ const Sidebar = ({content}) => {
                         </div>
                         <div className="text-zinc-900 text-base font-normal font-['Inter'] leading-normal">Buat</div>
                     </button>
-
-                    {/* <button className={`w-[280px] h-14 pl-10 justify-start items-center gap-3 inline-flex hover:bg-sky-400 rounded-[15px] ${content == 2 ? 'bg-sky-400' : null} rounded-[15px]`} 
-                        onClick={() => navigate("/view")}>
-                        <div className="w-8 h-8 relative">
-                            <div className="w-[26.67px] h-[25.33px] absolute">
-                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M16 27.3334C22.6273 27.3334 28 21.7854 28 18C28 14.2147 22.6273 8.66669 16 8.66669C9.37267 8.66669 4 14.2187 4 18C4 21.7814 9.37267 27.3334 16 27.3334Z" stroke="black" strokeWidth="2" strokeLinejoin="round" />
-                                    <path d="M16 22C17.0609 22 18.0783 21.5786 18.8284 20.8284C19.5786 20.0783 20 19.0609 20 18C20 16.9391 19.5786 15.9217 18.8284 15.1716C18.0783 14.4214 17.0609 14 16 14C14.9391 14 13.9217 14.4214 13.1716 15.1716C12.4214 15.9217 12 16.9391 12 18C12 19.0609 12.4214 20.0783 13.1716 20.8284C13.9217 21.5786 14.9391 22 16 22Z" stroke="black" strokeWidth="2" strokeLinejoin="round" />
-                                    <path d="M8.84375 7.51069L10.5731 9.92402M23.7511 7.80669L22.0211 10.22M16.0071 4.66669V8.66669" stroke="black" strokeWidth="2" strokeLinecap="round" />
-                                </svg>
-                            </div>
-                        </div>
-                        <div className="text-zinc-900 text-base font-normal font-['Inter'] leading-normal ">Lihat</div>
-                    </button> */}
-
                     <button 
                         className={`w-[280px] h-14 pl-10 justify-start items-center gap-3 inline-flex hover:bg-sky-400 rounded-[15px] ${content == 3 ? 'bg-sky-400' : null} rounded-[15px]`}
                         onClick={() => navigate("/analysis")}>

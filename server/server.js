@@ -36,6 +36,7 @@ app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
+// cek login if true = cookies
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
 
@@ -57,6 +58,7 @@ app.post('/login', (req, res) => {
             { email: results[0].user_email, username: results[0].user_name }, process.env.REACT_APP_JWT_KEY
           )
           res.json({ email: results[0].user_email, token: token });
+          connection.release();
         }
       });
     }
@@ -66,6 +68,7 @@ app.post('/login', (req, res) => {
 app.post('/main', (req, res) => {
   const { token } = req.body
 
+//json web token
   const data = jwt.verify(token, process.env.REACT_APP_JWT_KEY)
 
   pool.query('SELECT * FROM user WHERE user_email = ? AND user_name = ?', [data.email, data.username], (err, results) => {
@@ -80,6 +83,7 @@ app.post('/main', (req, res) => {
   });
 });
 
+//halaman dashboard
 app.get('/dashboard', (req, res) => {
   pool.getConnection((err, connection) => {
     if (err) {
@@ -119,6 +123,7 @@ app.get('/dashboard', (req, res) => {
   })
 })
 
+//component progress bar
 app.get('/progress', (req, res) => {
   pool.getConnection((err, connection) => {
     if (err) {
@@ -159,6 +164,7 @@ app.get('/progress', (req, res) => {
   })
 })
 
+//component trend chart
 app.get('/trend', (req, res) => {
   pool.getConnection((err, connection) => {
     if (err) {
@@ -216,6 +222,7 @@ app.get('/trend', (req, res) => {
   })
 })
 
+//get halaman buat kuesioner
 app.get('/create', (req, res) => {
   pool.getConnection((err, connection) => {
     if (err) {
@@ -241,6 +248,7 @@ app.get('/create', (req, res) => {
   })
 })
 
+//buat kuesioner
 app.post('/create', (req, res) => {
   const { email } = req.body;
   pool.getConnection((err, connection) => {
@@ -277,6 +285,7 @@ app.post('/create', (req, res) => {
   })
 });
 
+//Duplicate kuesioner
 app.post('/create/:id', (req, res) => {
   const { email } = req.body;
   console.log(req.body)
@@ -314,6 +323,7 @@ app.post('/create/:id', (req, res) => {
   })
 });
 
+//delete kuesioner
 app.delete('/create/:id', (req, res) => {
   pool.getConnection((err, connection) => {
     if (err) {
@@ -337,6 +347,7 @@ app.delete('/create/:id', (req, res) => {
   })
 });
 
+//form
 app.get("/form/:id", (req, res) => {
   pool.getConnection((err, connection) => {
     if (err) {
@@ -409,7 +420,7 @@ app.get("/value/:id", (req, res) => {
                   newValue = {};
                   const scaleSize = Number(questionArray.setting.scaleSize)
                   for (let i = 0; i < scaleSize * 2 + 3; i++) {
-                    newValue[i] = 0
+                    newValue[i + 1] = 0
                   }
                 }
                 const valueArray = results.map(element =>
@@ -421,7 +432,7 @@ app.get("/value/:id", (req, res) => {
                       newValue[index] = element.value;
                     } 
                     else if (type === "scale") {
-                      newValue[element.value] = (newValue[element.value] || 0) + 1;
+                      newValue[element.value + 1] = (newValue[element.value + 1] || 0) + 1;
                     } 
                     else {
                       if (element.value.length > 0) {
@@ -437,7 +448,6 @@ app.get("/value/:id", (req, res) => {
                     }
                   });
                 }
-                console.log(newValue)
                 newValueArray.push(newValue);
                 res.json(newValueArray);
               } else {
@@ -461,7 +471,7 @@ app.get("/value/:id", (req, res) => {
                 newValue = {};
                 const scaleSize = Number(questionArray.setting.scaleSize)
                 for (let i = 0; i < scaleSize * 2 + 3; i++) {
-                  newValue[i] = 0
+                  newValue[i + 1] = 0
                 }
               }
               connection.query(
@@ -493,7 +503,7 @@ app.get("/value/:id", (req, res) => {
                         newValue[index] = element.value;
                       } 
                       else if (type === "scale") {
-                        newValue[element.value] = (newValue[element.value] || 0) + 1;
+                        newValue[element.value + 1] = (newValue[element.value + 1] || 0) + 1;
                       } 
                       else {
                         if (element.value.length > 0) {

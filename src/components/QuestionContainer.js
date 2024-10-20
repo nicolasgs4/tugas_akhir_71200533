@@ -15,7 +15,7 @@ function QuestionContainer({
 }) {
   const activeIndex = getQuestionTypeValue(question.type);
 
-  const [toggleArr, setToggleArr] = useState();
+  const [toggleArr, setToggleArr] = useState([]);
   const [othersAdded, setOthersAdded] = useState(false); 
 
 
@@ -188,39 +188,40 @@ useEffect(() => {
             <label style={{ marginRight: "20px" }}>
               <input
                 type="radio"
-                checked={question.value[0] === 0}
-                onChange={(e) => handleChange("value", [0], index)}
-                disabled={isDisabled.fill}
-              />
-              <input
-                type="text"
-                value={
-                  question["answerElement"] === null
-                    ? ""
-                    : question["answerElement"][0]
-                }
-                onChange={(e) => addToggleElement(e.target.value, 0)}
-                placeholder="Masukan pilihan pertama"
-                disabled={isDisabled.edit}
-              />
-            </label>
-            <label>
-              <input
-                type="radio"
                 checked={question.value[0] === 1}
                 onChange={(e) => handleChange("value", [1], index)}
                 disabled={isDisabled.fill}
               />
               <input
                 type="text"
+                // value={
+                //   question["answerElement"] === null
+                //     ? ""
+                //     : question["answerElement"][0]
+                // }
                 value={
-                  question["answerElement"] === null
-                    ? ""
-                    : question["answerElement"][1]
+                  "Ya"
+                }
+                onChange={(e) => addToggleElement(e.target.value, 0)}
+                placeholder="Masukan pilihan pertama"
+                disabled={true}
+              />
+            </label>
+            <label>
+              <input
+                type="radio"
+                checked={question.value[0] === 0}
+                onChange={(e) => handleChange("value", [0], index)}
+                disabled={isDisabled.fill}
+              />
+              <input
+                type="text" 
+                value={
+                  "Tidak"
                 }
                 onChange={(e) => addToggleElement(e.target.value, 1)}
                 placeholder="Masukan pilihan kedua"
-                disabled={isDisabled.edit}
+                disabled={true}
               />
             </label>
           </div>
@@ -307,27 +308,12 @@ useEffect(() => {
                 >
                   Tambah Pilihan
                 </button>
-                {/* {!othersAdded && ( 
-                  <button
-                    onClick={() => {
-                      const newElements = [...(question["answerElement"] || []), "Others : "];
-                      handleChange("answerElement", newElements, index);
-                      setOthersAdded(true); 
-                    }}
-                    className="mt-2 bg-green-500 text-white p-2 rounded"
-                  >
-                    Tambah Others
-                  </button>
-                )}
-               */}
             </div>
           )}
         </div>
       )}
     </div>
   )}
-        {activeIndex === 4 && <div></div>}
-
         {activeIndex === 5 && (
           <div className="relative">
             {scaleElement()}

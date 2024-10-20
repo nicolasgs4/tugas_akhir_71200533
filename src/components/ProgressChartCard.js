@@ -51,13 +51,7 @@ const ProgressChartCard = () => {
                     const minLimit = Math.max(element.min_respondent - element.value_count, 0);
                     const postLimit = Math.max(element.value_count - element.min_respondent, 0);
                     const offset = parseInt(Math.max(element.min_respondent * 0.25 - postLimit, 0));
-
-                    // const preLimit = Math.max(100, 0);
-                    // const minLimit = Math.max(500 - 100, 0);
-                    // const postLimit = Math.max(100 - 500, 0);
-                    // const offset = parseInt(Math.max(500 * 0.25 - postLimit, 0));
-                    // console.log(res)
-
+                    
                     const data = {
                         info: {
                             publish_end: element.publish_end,

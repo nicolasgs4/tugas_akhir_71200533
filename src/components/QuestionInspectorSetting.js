@@ -94,12 +94,12 @@ export default function QuestionInspectorSetting(props) {
                 </> : null
             }
             
-            {
+            {/* {
                 activeIndex === 4 ?
                 <>
                     
                 </> : null
-            }
+            } */}
 
             {
                 activeIndex === 5 ?

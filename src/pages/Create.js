@@ -1,5 +1,4 @@
 import "./../App.css";
-
 import { useEffect, useRef, useState } from "react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
@@ -270,7 +269,7 @@ export function Create({ email, username }) {
               }}
             >
               <div className="w-[216px] h-[166px] rounded-t-lg bg-zinc-300" />
-              <div className="h-[104px] px-3 py-2 rounded-b-lg bg-white w-[200px] overflow-hidden whitespace-nowrap text-ellipsis  flex-col justify-start items-start gap-2 flex">
+              <div className="h-[104px] px-3 py-2 rounded-b-lg bg-white w-[200px] overflow-hidden whitespace-nowrap text-ellipsis flex-col justify-start items-start gap-2 flex">
                 <div className="self-stretch text-center text-zinc-900 text-lg font-semibold font-['Inter'] leading-normal">
                   {item.form_title}
                 </div>

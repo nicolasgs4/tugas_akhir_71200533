@@ -37,7 +37,7 @@ export function Login() {
             return;
         }
 
-        // Check if a token is available in cookies and do something with it
+        // Cek token di kukis
         if (cookies['skripsi-form']) {
             // Optional: Handle token loading logic
             console.log("Token from cookie: ", cookies['skripsi-form']);
@@ -45,7 +45,6 @@ export function Login() {
     }, [cookies]); // Re-run if cookies change
 
     return (
-        //             <form onSubmit={handleSubmit} method="POST" className='border-2 p-6 rounded-md space-y-4'>
 
         <div  className="w-full h-full flex bg-white">
             <img className="w-[837px] h-[543px] left-[301px] top-[278px] absolute" src="logo_fti.png" />
@@ -71,10 +70,10 @@ export function Login() {
                                 <div className="self-stretch h-10 bg-green-500 shadow-inner flex-col justify-start items-start gap-2 flex">
                                     <input
                                         type='text'
-                                        placeholder='Username'
+                                        placeholder='Masukan Username'
                                         ref={input.email}
-                                        defaultValue={"dummy@email.com"}
-                                        className="self-stretch h-10 bg-white rounded border border-red-500 justify-start items-center gap-2 inline-flex">
+                                        defaultValue={"admin@email.com"}
+                                        className="self-stretch h-10 bg-white rounded border border-blue-500 justify-start items-center gap-2 inline-flex">
                                         
                                     </input>
                                 </div>
@@ -90,10 +89,10 @@ export function Login() {
                                     <div className="self-stretch h-10 bg-white rounded border border-gray-300 justify-start items-center gap-2 inline-flex">
                                         <input 
                                             type='password'
-                                            placeholder='Password'
+                                            placeholder='Masukan Password'
                                             ref={input.password}
                                             defaultValue={"123"}
-                                            className="self-stretch h-10 bg-white rounded border border-red-500 justify-start items-center gap-2 inline-flex">
+                                            className="self-stretch h-10 bg-white rounded border border-blue-500 justify-start items-center gap-2 inline-flex">
                                         </input>
                                     </div>
                                 </div>

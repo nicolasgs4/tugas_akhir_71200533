@@ -64,7 +64,8 @@ export function FormAnalysis() {
           });
         }
         setPublishOptions(options);
-        setPublishArray([res[res.length - 1], res[res.length - 1]]);
+        setPublishIndex([0]);
+        // setPublishArray([res[res.length - 1]]);
         setPublishValues(res.reverse());
         return;
       }
@@ -157,7 +158,8 @@ export function FormAnalysis() {
             id={"title"}
             className="w-full pl-5 pr-3 py-3 -translate-y-6 bg-neutral-50 rounded-xl border border-sky-400 flex-row justify-start gap-5 inline-flex relative cursor cursor-pointer select-none items-center"
           >
-            <button onClick={() => navigate("/analysis")}>
+          
+              <button onClick={() => navigate("/analysis")}>
               <svg
                 width="40"
                 height="40"
@@ -201,7 +203,7 @@ export function FormAnalysis() {
           <div className="w-full relative flex">
             <Select
               options={publishOptions}
-              value={publishOptions[publishIndex.a]}
+              value={publishOptions[publishIndex]}
               onChange={(e) => {
                 const newPublishIndex = [];
                 e.map((element) => {
@@ -257,27 +259,6 @@ export function FormAnalysis() {
               }}
             />
           </div>
-            {/* <div className='absolute right-0'>
-                            <Select options={
-                                publishOptions
-                            }
-                                value={publishOptions[publishIndex.b]}
-                                onChange={e => {
-                                    setPublishIndex(prev => ({ ...prev, b: publishOptions.indexOf(e) }))
-                                }}
-                                isMulti
-                                isSearchable={false}
-                                className='w-60 bg-neutral-50 rounded-lg shadow border border-sky-400 justify-stretch items-center '
-                            />
-                        </div> */}
-
-          {/* {publishArray != null && (
-            <ValueContent
-              id={id}
-              formValueData={formValueData}
-              publishArray={publishArray}
-            />
-          )} */}
 
           {publishArray && formValueData.length > 0 && (
             <ValueContent

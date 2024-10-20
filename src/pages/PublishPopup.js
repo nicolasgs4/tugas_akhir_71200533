@@ -178,7 +178,7 @@ export function PublishPopup({ closeModal }) {
                         </div>
                         <div className='w-full flex flex-wrap justify-center'>
                             <div className='bg-white p-2'>
-                                <QRCode className="" size={192} value={`http://192.168.1.9:3000/form/${id}`} />
+                                <QRCode className="" size={192} value={`http://172.20.10.3:3000/form/${id}`} />
                             </div>
                         </div>
                     </>
