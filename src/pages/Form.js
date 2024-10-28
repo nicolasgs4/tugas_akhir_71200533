@@ -262,7 +262,7 @@ export function Form() {
               </button>
             )}
             <div className="text-sky-400 text-2xl font-black font-['Montserrat']">
-              Pembuatan Kuesioner
+              {isDisabled.edit ? "Pengisian Kuesioner" : "Pembuatan Kuesioner"}
             </div>
           </div>
           <div>
