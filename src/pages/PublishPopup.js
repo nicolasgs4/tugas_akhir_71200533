@@ -34,7 +34,7 @@ export function PublishPopup({ closeModal }) {
                     ...prev,
                     startDate: new Date(res.date_now),
                     endDate: new Date(res.date_now)
-                }));             
+                }));                
                 if (res.publish_end != null) {
                     setValue(prev => ({
                         ...prev,

@@ -12,7 +12,7 @@ import FormAnalysis from './pages/FormAnalysis';
 import { End } from './pages/End';
 
 
-function App() {
+function App() {  
     return (
           <AuthProvider>
             <Routes>

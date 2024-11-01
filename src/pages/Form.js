@@ -8,6 +8,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import myData from "./../output.json";
 import { useCookies } from "react-cookie";
 import End from "./End";
+import * as XLSX from "xlsx";
+import { da } from "date-fns/locale";
+
 
 export function Form() {
   const { id } = useParams();
@@ -147,6 +150,36 @@ export function Form() {
     }
   };
 
+  const handlePostValuesWithTimestamp = async (timestamp) => {
+    if (!allowChange.current) return;
+    const combinedValues = [];
+    formJson.forEach((element) => {
+      combinedValues.push({
+        id: element.id,
+        value: element.value,
+        type: element.type,
+      });
+      element.value = [];
+    });
+    try {
+      const response = await fetch("/form/" + id + "/fill", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ values: combinedValues, timestamp: timestamp }),
+      });
+      const res = await response.json();
+
+      if (res) {
+        return;
+      }
+      throw new Error(res.message);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
     if (!hasRendered.current) {
       hasRendered.current = true;
@@ -176,7 +209,7 @@ export function Form() {
     console.log(formJson);
     handleQuestionsChange();
   }, [formJson]);
-
+  
   const handleChange = (key, value, index) => {
     const keyJson = key.split(".");
     const count = keyJson.length;
@@ -222,9 +255,58 @@ export function Form() {
     }
   });
 
+  // const handleFileChange = (event) => {
+  //   const file = event.target.files[0];
+  //   if (file) {
+  //     const reader = new FileReader();
+  //     reader.onload = (event) => {
+  //       const data = new Uint8Array(event.target.result);
+  //       const workbook = XLSX.read(data, { type: "array" });
+  //       const sheetName = workbook.SheetNames[3]; 
+  //       const worksheet = workbook.Sheets[sheetName];
+  //       const json = XLSX.utils.sheet_to_json(worksheet);
+        
+  //       const excelBaseDate = new Date(1970, 0, 1);
+
+  //       for (let i = 0; i < json.length; i++) {
+  //         let j = 0;
+  //         var date;
+          
+  //         Object.entries(json[i]).forEach(([key, value]) => {
+  //           if (key == "Timestamp") {
+  //             const hours = (value % 1) * 24; // Get hours from the decimal part of Timestamp
+  //             const daysToAdd = Math.floor(value) - 25569; 
+
+  //             // Create a new date object for each iteration
+  //             const dateObject = new Date(excelBaseDate);
+  //             dateObject.setUTCDate(dateObject.getUTCDate() + daysToAdd);
+  //             // Set hours, minutes, and seconds
+  //             dateObject.setUTCHours(Math.floor(hours)); // Set hours
+  //             dateObject.setUTCMinutes(Math.floor((hours % 1) * 60)); // Set minutes
+  //             dateObject.setUTCSeconds(Math.round(((hours % 1) * 60 % 1) * 60));
+  //             date = dateObject;
+  //           } else if (key !== "Timestamp" && key !== "Email Address" && key !== "") {
+  //             if (formJson[j].type == "scale") {
+  //               formJson[j].value = value - 1;
+  //             } if (formJson[j].type == "booelan"){
+  //               formJson[j].value = value;
+  //             }
+  //             j++
+  //           }
+  //         });
+
+  //         handlePostValuesWithTimestamp(date);
+  //       }        
+  //     };
+  //     reader.readAsArrayBuffer(file); // Read the file as an ArrayBuffer
+  //   }
+  // };
+
   return (
     <div className="w-screen h-auto min-h-screen bg-neutral-50 ">
+    
       <div className="flex flex-wrap">
+        {/* <input type="file" accept=".xlsx, .xls" onChange={handleFileChange} /> */}
         <div className="md:w-1/4 sm:w-0 flex justify-start">
           {!isDisabled.edit && isDisabled.fill ? (
             <QuestionList

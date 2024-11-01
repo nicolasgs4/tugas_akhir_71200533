@@ -588,7 +588,7 @@ app.patch('/form/:id', (req, res) => {
 });
 
 app.post("/form/:id/fill", (req, res) => {
-  const { values } = req.body;
+  const { values, timestamp } = req.body;
   pool.getConnection((err, connection) => {
     if (err) {
       console.error('Error executing SQL query:', err);
@@ -607,10 +607,17 @@ app.post("/form/:id/fill", (req, res) => {
           connection.beginTransaction((err) => {
             if (err) connection.rollback(() => connection.release());
             else {
-              connection.query('INSERT INTO `value` (value_sid, form_sid, value_data, value_timestamp) VALUES (DEFAULT, ?, ?, NOW())', [results[0].form_sid, JSON.stringify(values)], (err) => {
-                if (err) { connection.rollback(() => connection.release()); console.log(err); }
-                else { connection.commit(); connection.release(); res.json(results); }
-              })
+              if (timestamp !== null && timestamp !== undefined) {
+                connection.query('INSERT INTO `value` (value_sid, form_sid, value_data, value_timestamp) VALUES (DEFAULT, ?, ?, ?)', [results[0].form_sid, JSON.stringify(values), format(parseISO(timestamp), 'yyyy-MM-dd HH:mm:ss')], (err) => {
+                  if (err) { connection.rollback(() => connection.release()); console.log(err); }
+                  else { connection.commit(); connection.release(); res.json(results); }
+                })
+              } else {
+                connection.query('INSERT INTO `value` (value_sid, form_sid, value_data, value_timestamp) VALUES (DEFAULT, ?, ?, NOW())', [results[0].form_sid, JSON.stringify(values)], (err) => {
+                  if (err) { connection.rollback(() => connection.release()); console.log(err); }
+                  else { connection.commit(); connection.release(); res.json(results); }
+                })
+              }
             }
           })
         }

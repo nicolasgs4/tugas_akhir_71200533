@@ -2,7 +2,7 @@ import './../App.css';
 import ValueContainer from '../components/ValueContainer';
 import { useEffect, useRef, useState } from 'react';
 
-export default function ValueContent({ id, formValueData, publishArray }) {
+export default function ValueContent({ id, formValueData, publishArray}) {
 
     const hasRendered = useRef(false);
 
@@ -21,6 +21,7 @@ export default function ValueContent({ id, formValueData, publishArray }) {
                         question={item}
                         questionType={formValueData[index].id}
                         publishArray={publishArray}
+                        
                     />
                 ))
             }

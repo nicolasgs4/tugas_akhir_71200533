@@ -7,7 +7,7 @@ import Select from "react-select";
 import { formatISO, parseISO } from "date-fns";
 import { list } from "postcss";
 
-export function FormAnalysis() {
+export function FormAnalysis({}) {
   const { id } = useParams();
 
   const [formDetail, setFormDetail] = useState({});
@@ -99,6 +99,8 @@ export function FormAnalysis() {
                 name: element.name,
                 type: element.type,
                 answerElement: element.answerElement,
+                minInfo: element.setting.minInfo,
+                maxInfo: element.setting.maxInfo
               },
             ]);
           });
@@ -259,7 +261,6 @@ export function FormAnalysis() {
               }}
             />
           </div>
-
           {publishArray && formValueData.length > 0 && (
             <ValueContent
               id={id}

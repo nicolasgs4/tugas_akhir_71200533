@@ -67,6 +67,16 @@ export function Dashboard() {
             </div>
             
 {/* Kuesioner */}
+            
+
+            {/* Trend Chart */}
+            <div className='row-span-2 col-span-4'>
+                <ProgressChartCard />
+            </div>
+            <div className='row-span-4 col-span-4'>
+                <TrendChartCard />
+            </div>
+            
             <div className='row-span-2 col-span-4 p-2.5 bg-neutral-50 rounded-[15px] border border-neutral-500 flex flex-wrap items-center justify-center relative'>
                 <div className="flex-col items-center gap-5 flex flex-wrap">
                     <div className="w-[184px] h-[50px] text-center text-neutral-900 text-[26px] font-normal font-['Roboto'] leading-none">Total <br /> Kuesioner</div>
@@ -79,17 +89,9 @@ export function Dashboard() {
                     <div className="text-zinc-900 text-5xl font-normal font-['Roboto'] leading-none">{totalQuestionnaire.current ? Math.floor(totalRespondent.current / totalQuestionnaire.current) : 0}</div>
                 </div>
             </div>
-
-            {/* Trend Chart */}
-            <div className='row-span-4 col-span-4'>
-                <TrendChartCard />
-            </div>
-
             
             {/* Progress Chart */}
-            <div className='row-span-2 col-span-4'>
-                <ProgressChartCard />
-            </div>
+            
 
             
             </div>

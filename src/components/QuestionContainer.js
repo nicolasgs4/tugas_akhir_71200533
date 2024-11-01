@@ -11,7 +11,7 @@ function QuestionContainer({
   handleDelete,
   focusIndex,
   handleFocus,
-  isDisabled,
+  isDisabled
 }) {
   const activeIndex = getQuestionTypeValue(question.type);
 

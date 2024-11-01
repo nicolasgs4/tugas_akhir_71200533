@@ -175,6 +175,7 @@ export function Create({ email, username }) {
               nested={true}
             >
               <div className="p-1 bg-white rounded-xl flex-col justify-start items-start gap-1 absolute border-b-2">
+              
                 <button
                   className="justify-start items-center gap-0.5 inline-flex"
                   onClick={() => {
@@ -182,6 +183,7 @@ export function Create({ email, username }) {
                   }}
                 >
                   <div className="w-6 h-6 relative">
+                  
                     <svg
                       width="24"
                       height="24"
@@ -270,7 +272,10 @@ export function Create({ email, username }) {
               }}
             >
             
-              <div className="w-[216px] h-[166px] rounded-t-lg bg-zinc-300" />
+              <img 
+              src="/images1.png" 
+              className="w-full h-full object-cover rounded-t-lg"
+            />
               <div className="px-3 py-2 rounded-b-lg bg-white w-[200px] overflow-hidden flex-col justify-start items-start gap-2 flex">
   {/* Form Title */}
                 <div className="self-stretch text-center text-zinc-900 text-lg font-semibold font-['Inter'] leading-normal whitespace-normal">

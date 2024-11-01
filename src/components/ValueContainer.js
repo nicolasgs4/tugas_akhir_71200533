@@ -19,7 +19,7 @@ import {
 } from "chart.js";
 import { Bar, getElementAtEvent } from "react-chartjs-2";
 
-export default function ValueContainer({ id, index, question, publishArray }) {
+export default function ValueContainer({ id, index, question, publishArray}) {
   const activeIndex = getQuestionTypeValue(question.type);
   const [valueData, setValueData] = useState(null);
   const chartRef = useRef();
@@ -174,7 +174,7 @@ export default function ValueContainer({ id, index, question, publishArray }) {
         tabIndex="0"
         className={`w-full pl-5 pr-3 bg-neutral-50 rounded-xl border border-sky-400 
         justify-start items-start flex flex-wrap relative cursor-pointer select-none 
-        ${activeIndex === 0 ? "" : "h-[450px]"}`}
+        ${activeIndex === 0 ? "" : "h-[550px]"}`}
       >
         <label className="h-fit w-full flex text-black text-2xl font-normal relative flex-wrap">
           {question.type === "section" ? null : (
@@ -184,7 +184,7 @@ export default function ValueContainer({ id, index, question, publishArray }) {
             disabled={true}
             type="text"
             className="w-3/4 bg-neutral-50 pt-4 px-2 overflow-auto"
-            style={{ maxHeight: "100px" }}
+            style={{ maxHeight: "50px" }}
             value={question.name}
             resize="vertical"
           />
@@ -242,18 +242,26 @@ export default function ValueContainer({ id, index, question, publishArray }) {
               </div>
             )}
           </div>
+          <div className="w-full flex flex-row justify-between p-4">
+              <p className="text-sm">{question.minInfo}</p>
+              <p className="text-sm">{question.maxInfo}</p>
+          </div>
           <div className="w-full flex flex-col mt-4">
             {valueData?.datasets?.map((dataset, idx) => (
+              <div>
+              
               <div key={idx} className="flex items-center mt-2">
                 <div
                   className="w-4 h-4 mr-2"
                   style={{ backgroundColor: dataset.backgroundColor }}
                 ></div>
+
                 <span className="font-semibold text-sm">{formatDateToIso(dataset.label)}</span>
                 <span className="text-xs ml-4 text-gray-600">
                   {`Jumlah data: ${dataset.data.reduce((a, b) => a + b, 0)}`}
                 </span>
               </div>
+            </div>
             ))}
           </div>
         </div>
